@@ -14,9 +14,8 @@ LOCAL_TZ = pytz.timezone(settings.TIME_ZONE)
 
 
 class ParameterSetManager(object):
-
     parameterset = None
-    parameters = None       # queryset of parameters
+    parameters = None  # queryset of parameters
     blank_param = None
 
     # parameterset OR schema / datafile / dataset / experiment
@@ -184,6 +183,7 @@ class ParameterSetManager(object):
         return param.id
 
         # use this one from post data
+
     def set_param_list(self, parname, value_list, fullparname=None):
         self.delete_params(parname)
         for value in value_list:

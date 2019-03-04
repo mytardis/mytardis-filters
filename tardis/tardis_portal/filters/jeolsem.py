@@ -66,8 +66,8 @@ class JEOLSEMFilter(object):
     def is_already_processed(self, datafile):
         def get_filename(ps):
             try:
-                return ParameterSetManager(ps)\
-                        .get_param('metadata-filename', True)
+                return ParameterSetManager(ps) \
+                    .get_param('metadata-filename', True)
             except DatasetParameter.DoesNotExist:
                 return None
 
