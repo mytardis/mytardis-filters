@@ -1,0 +1,9 @@
+Django==1.11.20 # pyup: >=1.11,<2.0
+Celery==4.2.1
+psycopg2-binary==2.7.7
+python-dateutil==2.8.0
+billiard==3.5.0.5
+rpy2==2.8.6
+pyyaml==3.13
+
+#oaX23AXB

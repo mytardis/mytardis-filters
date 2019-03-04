@@ -1,0 +1,32 @@
+# Docker
+.dockerignore
+Dockerfile*
+docker*yml
+docker/**
+
+# Git
+.gitignore
+.git
+.github
+
+# PyCharm
+.idea
+
+# Python
+**/__pycache__
+**/*.py[cod]
+
+# Virtual env
+.env
+.venv
+venv
+virtualenv
+
+# SQL
+db.sqlite3
+
+# docker-compose
+app
+db.env
+rabbitmq.env
+settings.env

@@ -1,0 +1,64 @@
+version: '3.3'
+
+volumes:
+  store_data:
+  db_data:
+  rabbitmq_data:
+
+services:
+  app:
+    image: dyakhnov/mytardis:nofilters
+    ports:
+      - 8000:8000
+    volumes:
+      - store_data:/var/store
+      - ./docker/app.settings.py:/app/tardis/settings.py
+    env_file:
+      - ./docker/app.env
+    depends_on:
+      - db
+      - rabbitmq
+  celery:
+    image: dyakhnov/mytardis:nofilters
+    command: celery worker --app=tardis.celery.tardis_app --queues=celery --loglevel=debug
+    environment:
+      - DJANGO_SETTINGS_MODULE=tardis.settings
+    volumes:
+      - store_data:/var/store
+      - ./docker/app.settings.py:/app/tardis/settings.py
+    env_file:
+      - ./docker/app.env
+    depends_on:
+      - db
+      - rabbitmq
+  filters:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: celery worker --app=tardis.celery.tardis_app --queues=filters --loglevel=debug
+    environment:
+      - DJANGO_SETTINGS_MODULE=tardis.settings
+    volumes:
+      - ./:/app
+      - store_data:/var/store
+    env_file:
+      - ./docker/app.env
+    depends_on:
+      - db
+      - rabbitmq
+  db:
+    image: postgres:9.5
+    ports:
+      - 5432:5432
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    env_file:
+      - ./docker/db.env
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - 15672:15672
+    volumes:
+      - rabbitmq_data:/data
+    env_file:
+      - ./docker/rabbitmq.env
