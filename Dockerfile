@@ -59,8 +59,6 @@ WORKDIR /app
 
 RUN pip install -r requirements.txt
 
-FROM builder AS run
-
 # RUN mkdir -p tardis/tardis_portal/filters
 
 # RUN pip install git+https://github.com/mytardis/mytardisbf.git@0.1.1#egg=mytardisbf
@@ -78,3 +76,10 @@ RUN pip install -r tardis/tardis_portal/filters/fcs/requirements.txt
 # RUN git clone https://github.com/mytardis/csv-mytardis-filter tardis/tardis_portal/filters/csv
 
 CMD ["celery", "worker", "--app=tardis.celery.tardis_app", "--queues=filters", "--loglevel=info"]
+
+FROM builder AS test
+
+RUN pip install -r requirements-test.txt
+
+# This will keep container running...
+CMD ["tail", "-f", "/dev/null"]
