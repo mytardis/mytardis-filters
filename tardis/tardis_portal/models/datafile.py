@@ -23,7 +23,7 @@ from django.forms.models import model_to_dict
 from django.utils import timezone
 from django.utils.encoding import python_2_unicode_compatible
 
-import magic # pylint: disable=import-error
+import magic  # pylint: disable=import-error
 
 from .storage import StorageBox, StorageBoxOption, StorageBoxAttribute
 

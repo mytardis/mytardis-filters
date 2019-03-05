@@ -302,6 +302,7 @@ class FcsImageFilter(object):
 
         return None
 
+
 def make_filter(name='', schema='',
                 fcsplot_path=None, showinf_path=None,
                 queue=None):
