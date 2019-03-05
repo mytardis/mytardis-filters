@@ -23,17 +23,17 @@ from django.forms.models import model_to_dict
 from django.utils import timezone
 from django.utils.encoding import python_2_unicode_compatible
 
-# import magic
+import magic # pylint: disable=import-error
 
-# from .. import tasks
-from .dataset import Dataset
 from .storage import StorageBox, StorageBoxOption, StorageBoxAttribute
 
 logger = logging.getLogger(__name__)
 
-IMAGE_FILTER = (Q(mimetype__startswith='image/') &
-                ~Q(mimetype='image/x-icon')) |\
-    (Q(datafileparameterset__datafileparameter__name__units__startswith="image"))  # noqa
+IMAGE_FILTER = (
+    Q(mimetype__startswith='image/') & ~Q(mimetype='image/x-icon')
+) | (
+    Q(datafileparameterset__datafileparameter__name__units__startswith='image')
+)
 
 
 @python_2_unicode_compatible
@@ -61,7 +61,6 @@ class DataFile(models.Model):
         digits
     """
 
-    dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE)
     filename = models.CharField(max_length=400)
     directory = models.CharField(blank=True, null=True, max_length=255)
     size = models.BigIntegerField(blank=True, null=True)
@@ -144,7 +143,8 @@ class DataFile(models.Model):
             return dataset_boxes[0]
         experiment_boxes = StorageBox.objects.filter(
             file_objects__datafile__dataset__experiments__in=self
-            .dataset.experiments.all())
+            .dataset.experiments.all()
+        )
         if experiment_boxes:
             return experiment_boxes[0]
         # TODO: select one accessible to the owner of the file
@@ -161,10 +161,10 @@ class DataFile(models.Model):
 
         loc_boxes = StorageBoxOption.objects.filter(
             key='location',
-            value=getattr(settings, 'DEFAULT_RECEIVING_DIR', '/tmp'))\
+            value=getattr(settings, 'DEFAULT_RECEIVING_DIR', '/tmp')) \
             .values_list('storage_box', flat=True)
         attr_boxes = StorageBoxAttribute.objects.filter(
-            key="type", value="receiving")\
+            key="type", value="receiving") \
             .values_list('storage_box', flat=True)
         existing_default = set(loc_boxes) & set(attr_boxes)
         if existing_default:
@@ -285,7 +285,8 @@ class DataFile(models.Model):
         if dfo is None:
             return None
         if dfo.storage_type in (StorageBox.TAPE,):
-            tasks.dfo_cache_file.apply_async(args=[dfo.id])
+            print('Ouch!')
+            # tasks.dfo_cache_file.apply_async(args=[dfo.id])
         return dfo.file_object
 
     def get_preferred_dfo(self, verified_only=True):
@@ -364,7 +365,8 @@ class DataFile(models.Model):
         images
         '''
         mimetype = self.get_mimetype()
-        return mimetype.startswith('image/') \
+        return\
+            mimetype.startswith('image/') \
             and mimetype not in ('image/x-icon', 'image/img')
 
     def get_image_data(self):
@@ -392,17 +394,12 @@ class DataFile(models.Model):
 
         render_image_size_limit = getattr(settings, 'RENDER_IMAGE_SIZE_LIMIT',
                                           0)
-        if self.is_image() and (self.size <= render_image_size_limit or
-                                render_image_size_limit == 0):
+        if self.is_image() and (
+            self.size <= render_image_size_limit or render_image_size_limit == 0
+        ):
             return self.get_file()
 
         return None
-
-    def is_public(self):
-        from .experiment import Experiment
-        return Experiment.objects.filter(
-            datasets=self.dataset,
-            public_access=Experiment.PUBLIC_ACCESS_FULL).exists()
 
     def _has_any_perm(self, user_obj):
         if not hasattr(self, 'id'):
@@ -497,7 +494,7 @@ class DataFileObject(models.Model):
                 'uri': self.uri,
                 'v': str(self.verified)
             }
-        except:
+        except Exception:
             return 'undefined'
 
     def __init__(self, *args, **kwargs):
@@ -531,7 +528,7 @@ class DataFileObject(models.Model):
             self._initial_values = self._current_values
         elif not reverify:
             return
-        tasks.dfo_verify.apply_async(countdown=5, args=[self.id])
+        # tasks.dfo_verify.apply_async(countdown=5, args=[self.id])
 
     @property
     def storage_type(self):
@@ -549,7 +546,8 @@ class DataFileObject(models.Model):
 
         def default_identifier(dfo):
             path_parts = ["%s-%s" % (
-                urllib.parse.quote(dfo.datafile.dataset.description, safe='') or 'untitled',
+                urllib.parse.quote(dfo.datafile.dataset.description,
+                                   safe='') or 'untitled',
                 dfo.datafile.dataset.id)]
             if dfo.datafile.directory is not None:
                 path_parts += [urllib.parse.quote(dfo.datafile.directory)]
@@ -593,8 +591,9 @@ class DataFileObject(models.Model):
         """
         cached_file_object = getattr(self, '_cached_file_object', None)
         if cached_file_object is None or cached_file_object.closed:
-            cached_file_object = self._storage.open(self.uri or
-                                                    self._create_uri())
+            cached_file_object = self._storage.open(
+                self.uri or self._create_uri()
+            )
             self._cached_file_object = cached_file_object
         return self._cached_file_object
 
@@ -620,8 +619,8 @@ class DataFileObject(models.Model):
     def _storage(self):
         cached_storage = getattr(self, '_cached_storage', None)
         if cached_storage is None:
-            cached_storage = self.storage_box\
-                                 .get_initialised_storage_instance()
+            cached_storage = self.storage_box \
+                .get_initialised_storage_instance()
             self._cached_storage = cached_storage
         return self._cached_storage
 
@@ -650,7 +649,8 @@ class DataFileObject(models.Model):
         existing = self.datafile.file_objects.filter(storage_box=dest_box)
         if existing.count() > 0:
             if not existing[0].verified and verify:
-                tasks.dfo_verify.delay(existing[0].id)
+                print('Ouch!')
+                # tasks.dfo_verify.delay(existing[0].id)
             return existing[0]
         try:
             with transaction.atomic():
@@ -665,7 +665,8 @@ class DataFileObject(models.Model):
                 (self.id, str(e)))
             return False
         if verify:
-            tasks.dfo_verify.delay(copy.id)
+            print('Ouch!')
+            # tasks.dfo_verify.delay(copy.id)
         return copy
 
     def move_file(self, dest_box=None):
@@ -690,9 +691,10 @@ class DataFileObject(models.Model):
         database = {comp_type: getattr(df, comp_type)
                     for comp_type in comparisons}
         database_update = {}
-        empty_value = {db_key: db_val is None or (
-            isinstance(db_val, string_types) and db_val.strip() == '')
-            for db_key, db_val in database.items()}
+        empty_value = {
+            db_key: db_val is None or (
+                isinstance(db_val, string_types) and db_val.strip() == ''
+            ) for db_key, db_val in database.items()}
         same_values = {key: False for key, empty in empty_value.items()
                        if not empty}
         io_error = False
@@ -701,7 +703,7 @@ class DataFileObject(models.Model):
         try:
             actual['size'] = self.file_object.size
             if not empty_value['size'] and \
-               actual['size'] == database['size']:
+                    actual['size'] == database['size']:
                 same_values['size'] = True
             elif empty_value['size']:
                 # only ever empty when settings.REQ...SIZES = False

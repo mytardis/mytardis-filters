@@ -37,27 +37,27 @@ fcs.py
 """
 import sys
 import logging
-
-from django.conf import settings
-from django.core.cache import caches
-
-from tardis.tardis_portal.models import Schema, DatafileParameterSet
-from tardis.tardis_portal.models import ParameterName, DatafileParameter
-from tardis.tardis_portal.models import DataFile, DataFileObject
 import subprocess
 import re
 import os
 import traceback
 import urlparse
+
+from django.conf import settings
+from django.core.cache import caches
+
 from celery.task import task
+
+from tardis.tardis_portal.models import Schema, DatafileParameterSet
+from tardis.tardis_portal.models import ParameterName, DatafileParameter
+from tardis.tardis_portal.models import DataFile, DataFileObject
 
 logger = logging.getLogger(__name__)
 
 LOCK_EXPIRE = 60 * 5  # Lock expires in 5 minutes
 
 
-@task(name="tardis_portal.filters.fcs.fcsplot",
-      ignore_result=True)
+@task(name="tardis_portal.filters.fcs.fcsplot", ignore_result=True)
 def run_fcsplot(fcsplot_path, inputfilename, df_id, schema_id):
     """
     Run fcsplot on a FCS file.
@@ -237,6 +237,10 @@ class FcsImageFilter(object):
     :type schema: string
     :param queue: the name of the Celery queue to run tasks in.
     :type queue: string
+    :param fcsplot_path: path for fcsplot binary
+    :type fcsplot_path: string
+    :param showinf_path: path for showinf binary
+    :type showinf_path: string
     """
 
     def __init__(self, name, schema, fcsplot_path, showinf_path,
@@ -251,9 +255,11 @@ class FcsImageFilter(object):
         """post save callback entry point.
 
         :param sender: The model class.
-        :param instance: The actual instance being saved.
-        :param created: A boolean; True if a new record was created.
-        :type created: bool
+        :type sender: class
+        :param kwargs: extra args
+        :type kwargs: object
+        :return: none
+        :rtype: none
         """
         instance = kwargs.get('instance')
         schema = Schema.objects.get(namespace__exact=self.schema)
@@ -294,6 +300,7 @@ class FcsImageFilter(object):
             logger.error(str(e))
             return None
 
+        return None
 
 def make_filter(name='', schema='',
                 fcsplot_path=None, showinf_path=None,

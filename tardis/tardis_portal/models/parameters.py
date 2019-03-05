@@ -20,12 +20,8 @@ from six import text_type
 from ..ParameterSetManager import ParameterSetManager
 from ..managers import OracleSafeManager, ParameterNameManager, SchemaManager
 
-from .experiment import Experiment
-from .dataset import Dataset
 from .datafile import DataFile
 from .storage import StorageBox
-from .instrument import Instrument
-
 
 LOCAL_TZ = pytz.timezone(settings.TIME_ZONE)
 logger = logging.getLogger(__name__)
@@ -41,7 +37,6 @@ class ParameterSetManagerMixin(ParameterSetManager):
 
 @python_2_unicode_compatible
 class Schema(models.Model):
-
     EXPERIMENT = 1
     DATASET = 2
     DATAFILE = 3
@@ -127,7 +122,6 @@ class Schema(models.Model):
 
 @python_2_unicode_compatible
 class ParameterName(models.Model):
-
     EXACT_VALUE_COMPARISON = 1
     NOT_EQUAL_COMPARISON = 2
     RANGE_COMPARISON = 3
@@ -166,7 +160,7 @@ class ParameterName(models.Model):
         (DATETIME, 'DATETIME'),
         (LONGSTRING, 'LONGSTRING'),
         (JSON, 'JSON'),
-        )
+    )
 
     schema = models.ForeignKey(Schema, on_delete=models.CASCADE)
     name = models.CharField(max_length=60)
@@ -253,17 +247,16 @@ def _get_filename_parameter_as_image_element(parameter):
         if viewname is not None:
             value = "<a href='%s' target='_blank'>" \
                     "<img style='width: 300px;' src='%s' /></a>" % \
-                 (reverse(viewname=viewname,
-                          args=[parameter.id]),
-                  reverse(viewname=viewname,
-                          args=[parameter.id]))
+                    (reverse(viewname=viewname,
+                             args=[parameter.id]),
+                     reverse(viewname=viewname,
+                             args=[parameter.id]))
             return mark_safe(value)
 
     return None
 
 
 def _get_parameter(parameter):
-
     if parameter.name.isNumeric():
         value = str(parameter.numerical_value)
         units = parameter.name.units
@@ -388,7 +381,7 @@ class Parameter(models.Model):
         try:
             return '%s Param: %s=%s' % (self.parameter_type,
                                         self.name.name, self.get())
-        except:
+        except Exception:
             return 'Unitialised %sParameter' % self.parameter_type
 
     @property
@@ -398,12 +391,6 @@ class Parameter(models.Model):
         if isinstance(self.link_gfk, DataFile):
             url = reverse('tardis_portal.view_dataset',
                           kwargs={'dataset_id': self.link_gfk.dataset.id})
-        elif isinstance(self.link_gfk, Dataset):
-            url = reverse('tardis_portal.view_dataset',
-                          kwargs={'dataset_id': self.link_id})
-        elif isinstance(self.link_gfk, Experiment):
-            url = reverse('tardis_portal.view_experiment',
-                          kwargs={'experiment_id': self.link_id})
         elif self.link_gfk is None and self.string_value:
             url = self.string_value
         else:
@@ -497,32 +484,6 @@ class DatafileParameter(Parameter):
     parameter_type = 'Datafile'
 
 
-class DatasetParameter(Parameter):
-    parameterset = models.ForeignKey(
-        'DatasetParameterSet', on_delete=models.CASCADE)
-    parameter_type = 'Dataset'
-
-
-class ExperimentParameter(Parameter):
-    parameterset = models.ForeignKey(
-        'ExperimentParameterSet', on_delete=models.CASCADE)
-    parameter_type = 'Experiment'
-
-    def save(self, *args, **kwargs):
-        super(ExperimentParameter, self).save(*args, **kwargs)
-        try:
-            from .hooks import publish_public_expt_rifcs
-            publish_public_expt_rifcs(self.parameterset.experiment)
-        except Exception:
-            logger.exception('')
-
-
-class InstrumentParameter(Parameter):
-    parameterset = models.ForeignKey(
-        'InstrumentParameterSet', on_delete=models.CASCADE)
-    parameter_type = 'Instrument'
-
-
 class DatafileParameterSet(ParameterSet):
     datafile = models.ForeignKey(DataFile, on_delete=models.CASCADE)
     parameter_class = DatafileParameter
@@ -531,33 +492,8 @@ class DatafileParameterSet(ParameterSet):
         return ('datafile.filename', 'Datafile')
 
 
-class DatasetParameterSet(ParameterSet):
-    dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE)
-    parameter_class = DatasetParameter
-
-    def _get_label(self):
-        return ('dataset.description', 'Dataset')
-
-
-class InstrumentParameterSet(ParameterSet):
-    instrument = models.ForeignKey(Instrument, on_delete=models.CASCADE)
-    parameter_class = InstrumentParameter
-
-    def _get_label(self):
-        return ('instrument.name', 'Instrument')
-
-
-class ExperimentParameterSet(ParameterSet):
-    experiment = models.ForeignKey(Experiment, on_delete=models.CASCADE)
-    parameter_class = ExperimentParameter
-
-    def _get_label(self):
-        return ('experiment.title', 'Experiment')
-
-
 @python_2_unicode_compatible
 class FreeTextSearchField(models.Model):
-
     parameter_name = models.ForeignKey(ParameterName, on_delete=models.CASCADE)
 
     class Meta:

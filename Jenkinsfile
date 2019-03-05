@@ -65,7 +65,8 @@ podTemplate(
         }
         def tests = [:]
         [
-            'pylint': "docker run ${dockerImageFullNameTag} pylint --rcfile .pylintrc tardis"
+            'pylint': "docker run ${dockerImageFullNameTag} pylint --rcfile .pylintrc tardis",
+            'flake8': "docker run ${dockerImageFullNameTag} flake8 --config=.flake8 tardis"
         ].each { name, command ->
             tests[name] = {
                 stage("Run test - ${name}") {

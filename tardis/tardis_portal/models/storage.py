@@ -9,9 +9,6 @@ from django.db.utils import DatabaseError
 from django.utils.encoding import python_2_unicode_compatible
 import django.core.files.storage as django_storage
 
-#from celery.contrib.methods import task
-
-
 logger = logging.getLogger(__name__)
 
 
@@ -165,7 +162,8 @@ class StorageBox(models.Model):
         find a storage box where location is DEFAULT_STORAGE_BASE_DIR
         create a default storage box at DEFAULT_STORAGE_BASE_DIR
         lowest id storage box is default
-        no storage box defined, use hard coded default for now  TODO: consider removing this
+        no storage box defined, use hard coded default for now
+        TODO: consider removing this
 
         Would be nice: get largest free space one, test for authorisation
         '''
@@ -203,10 +201,10 @@ class StorageBox(models.Model):
             raise
         disk_size = base_dir_stat.f_frsize * base_dir_stat.f_blocks
         max_size = disk_size * 0.9
-        s_box = StorageBox(name='local box at %s' % (location or
-                           'default location'),
-                           max_size=max_size,
-                           status='online')
+        s_box = StorageBox(
+            name='local box at %s' % (location or 'default location'),
+            max_size=max_size,
+            status='online')
         s_box.save()
         sbo = StorageBoxOption(
             storage_box=s_box,

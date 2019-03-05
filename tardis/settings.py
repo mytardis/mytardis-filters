@@ -1,13 +1,12 @@
 from __future__ import absolute_import
-
 import os
+import yaml
 from kombu import Exchange, Queue
 
-import yaml
-
-settings_filename = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'settings.yaml')
+settings_filename = os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                                 'settings.yaml')
 with open(settings_filename) as settings_file:
-    data = yaml.load(settings_file)
+    data = yaml.load(settings_file, Loader=yaml.FullLoader)
 
 DEBUG = data['debug']
 SECRET_KEY = data['secret_key']
@@ -64,11 +63,14 @@ DEFAULT_TASK_PRIORITY = data['celery']['default_task_priority']
 CELERY_ACKS_LATE = True
 CELERY_DEFAULT_QUEUE = data['celery']['default_queue']
 CELERY_QUEUES = (
-    Queue(CELERY_DEFAULT_QUEUE, Exchange(CELERY_DEFAULT_QUEUE),
-          routing_key=CELERY_DEFAULT_QUEUE,
-          queue_arguments={
-              'x-max-priority': MAX_TASK_PRIORITY
-          }),
+    Queue(
+        CELERY_DEFAULT_QUEUE,
+        Exchange(CELERY_DEFAULT_QUEUE),
+        routing_key=CELERY_DEFAULT_QUEUE,
+        queue_arguments={
+            'x-max-priority': MAX_TASK_PRIORITY
+        }
+    ),
 )
 
 CELERY_IMPORTS = data['celery']['imports']

@@ -199,11 +199,9 @@ class CsvImageFilter(object):
                         for val in reversed(metadata[p.name]):
                             strip_val = val.strip()
                             if strip_val:
-                                if strip_val not in exclude_line:
-                                    dfp = DatafileParameter(parameterset=ps,
-                                                            name=p)
-                                    dfp.string_value = strip_val
-                                    dfp.save()
+                                dfp = DatafileParameter(parameterset=ps, name=p)
+                                dfp.string_value = strip_val
+                                dfp.save()
                     else:
                         dfp.string_value = metadata[p.name]
                         dfp.save()

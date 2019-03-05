@@ -40,28 +40,13 @@ models/__init__.py
 
 """
 
-from django.contrib.auth.models import User, Group
-
-import tardis.tardis_portal.models.hooks
-
-from .access_control import UserAuthentication, UserProfile, GroupAdmin
-from .access_control import ObjectACL
-from .facility import Facility
-from .instrument import Instrument
-from .experiment import Experiment, ExperimentAuthor
-from .dataset import Dataset
 from .datafile import DataFile
 from .datafile import DataFileObject
 from .storage import StorageBox
 from .storage import StorageBoxOption
 from .storage import StorageBoxAttribute
 
-from .jti import JTI
-
-from .license import License
 from .parameters import (
-    DatafileParameter, DatafileParameterSet, DatasetParameter,
-    DatasetParameterSet, ExperimentParameter, ExperimentParameterSet,
-    InstrumentParameter, InstrumentParameterSet, FreeTextSearchField,
+    DatafileParameter, DatafileParameterSet,
+    FreeTextSearchField,
     ParameterName, Schema)
-from .token import Token

@@ -6,8 +6,6 @@ from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.timezone import is_aware, make_aware
 
-from .models.experiment import Experiment
-from .models.dataset import Dataset
 from .models.datafile import DataFile
 
 LOCAL_TZ = pytz.timezone(settings.TIME_ZONE)
@@ -44,12 +42,8 @@ class ParameterSetManager(object):
         :raises TypeError:
         """
         from .models.parameters import (
-            DatasetParameterSet,
             DatafileParameterSet,
-            ExperimentParameterSet,
-            DatasetParameter,
             DatafileParameter,
-            ExperimentParameter,
             ParameterSet)
 
         if issubclass(type(self), ParameterSet):
@@ -64,18 +58,6 @@ class ParameterSetManager(object):
                     parameterset=self.parameterset).order_by('name__full_name')
 
                 self.blank_param = DatafileParameter
-
-            elif isinstance(self.parameterset, DatasetParameterSet):
-                self.parameters = DatasetParameter.objects.filter(
-                    parameterset=self.parameterset).order_by('name__full_name')
-
-                self.blank_param = DatasetParameter
-
-            elif isinstance(self.parameterset, ExperimentParameterSet):
-                self.parameters = ExperimentParameter.objects.filter(
-                    parameterset=self.parameterset).order_by('name__full_name')
-
-                self.blank_param = ExperimentParameter
 
             else:
                 raise TypeError("Invalid parameterset object given.")
@@ -95,32 +77,13 @@ class ParameterSetManager(object):
 
                 self.blank_param = DatafileParameter
 
-            elif isinstance(parentObject, Dataset):
-                self.parameterset = DatasetParameterSet(
-                    schema=self.get_schema(), dataset=parentObject)
-
-                self.parameterset.save()
-
-                self.parameters = DatasetParameter.objects.filter(
-                    parameterset=self.parameterset)
-
-                self.blank_param = DatasetParameter
-
-            elif isinstance(parentObject, Experiment):
-                self.parameterset = ExperimentParameterSet(
-                    schema=self.get_schema(), experiment=parentObject)
-
-                self.parameterset.save()
-
-                self.parameters = ExperimentParameter.objects.filter(
-                    parameterset=self.parameterset)
-
-                self.blank_param = ExperimentParameter
-
             else:
-                raise TypeError("Invalid parent object." +
-                                "Must be an experiment/dataset/datafile not "
-                                + str(type(parentObject)))
+                raise TypeError(
+                    'Invalid parent object. '
+                    'Must be an experiment/dataset/datafile not {}'.format(
+                        str(type(parentObject))
+                    )
+                )
 
         else:
             raise TypeError("Missing arguments")
