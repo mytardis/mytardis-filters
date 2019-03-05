@@ -84,9 +84,11 @@ class CsvImageFilter(object):
         """post save callback entry point.
 
         :param sender: The model class.
-        :param instance: The actual instance being saved.
-        :param created: A boolean; True if a new record was created.
-        :type created: bool
+        :type sender: class
+        :param kwargs: extra args
+        :type kwargs: object
+        :return none
+        :rtype none
         """
         instance = kwargs.get('instance')
 
@@ -187,24 +189,21 @@ class CsvImageFilter(object):
         for p in parameters:
             print p.name
             if p.name in metadata:
-                dfp = DatafileParameter(parameterset=ps,
-                                        name=p)
+                dfp = DatafileParameter(parameterset=ps, name=p)
                 if p.isNumeric():
                     if metadata[p.name] != '':
                         dfp.numerical_value = metadata[p.name]
                         dfp.save()
+                elif isinstance(metadata[p.name], list):
+                    for val in reversed(metadata[p.name]):
+                        strip_val = val.strip()
+                        if strip_val:
+                            dfp = DatafileParameter(parameterset=ps, name=p)
+                            dfp.string_value = strip_val
+                            dfp.save()
                 else:
-                    print p.name
-                    if isinstance(metadata[p.name], list):
-                        for val in reversed(metadata[p.name]):
-                            strip_val = val.strip()
-                            if strip_val:
-                                dfp = DatafileParameter(parameterset=ps, name=p)
-                                dfp.string_value = strip_val
-                                dfp.save()
-                    else:
-                        dfp.string_value = metadata[p.name]
-                        dfp.save()
+                    dfp.string_value = metadata[p.name]
+                    dfp.save()
 
         return ps
 
