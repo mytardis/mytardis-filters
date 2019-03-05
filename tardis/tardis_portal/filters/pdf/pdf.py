@@ -196,7 +196,10 @@ class PdfImageFilter(object):
             if p in self.tagsToExclude:
                 continue
 
-            parameter = filter(lambda x: x.name == p, param_objects)  # pylint: disable=cell-var-from-loop
+            parameter = filter(
+                lambda x: x.name == p,  # pylint: disable=cell-var-from-loop
+                param_objects
+            )
 
             if parameter:
                 parameters.append(parameter[0])
