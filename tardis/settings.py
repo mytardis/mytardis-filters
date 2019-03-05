@@ -1,7 +1,7 @@
 from __future__ import absolute_import
 import os
-import yaml
 from kombu import Exchange, Queue
+import yaml  # pylint: disable=import-error
 
 settings_filename = os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                  'settings.yaml')

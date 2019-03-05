@@ -1,7 +1,7 @@
 import os
-import numpy as np
-import bioformats
-from scipy.ndimage import zoom
+import numpy as np  # pylint: disable=import-error
+import bioformats  # pylint: disable=import-error
+from scipy.ndimage import zoom  # pylint: disable=import-error
 
 
 def stretch_contrast(img):
@@ -9,13 +9,14 @@ def stretch_contrast(img):
 
     Parameters
     ----------
-    img: numpy.ndarray
-        N x M array of grayscale image intensities
+    :param img: N x M array of grayscale image intensities
+    :type img: numpy.ndarray
 
     Returns
     -------
-    img: numpy.ndarray (dtype = np.int8)
-        Output image with contrast stretch over the 8-bit range.
+    :return: Output image with contrast stretch over the 8-bit range.
+    :rtype: numpy.ndarray (dtype = np.int8)
+
     """
     s = np.subtract(img, np.min(img))
     p = 255.0 / (np.max(img) - np.min(img))
@@ -29,21 +30,24 @@ def get_preview_image(fname, meta_xml=None, maxwh=256, series=0):
 
     Parameters
     ----------
-    fname: str
-        Path to image file.
-    meta_xml: str
-        OME XML metadata.
-    maxwh: int
-        Maximum width or height of the output thumbnail. If the extracted
-        image is larger in either x or y, the image will will be downsized
-        to fit.
-    series: int
-        Series for multi-stack formats (default=0)
+    :param fname: Path to image file.
+    :type fname: string
+    :param meta_xml: OME XML metadata.
+    :type meta_xml: string
+    :param maxwh: Maximum width or height of the output thumbnail. If the
+        extracted image is larger in either x or y, the image will will be
+        downsized to fit.
+    :type maxwh: int
+    :param series: Series for multi-stack formats (default=0)
+    :type series: int
 
     Returns
     -------
-    img: numpy.ndarray
-        N x M array of grayscale pixel intentsities.
+    :return: N x M array of grayscale pixel intentsities.
+    :rtype: numpy.ndarray
+
+    :raises Exception: bla
+
     """
     name, ext = os.path.splitext(os.path.basename(fname))
 
@@ -85,13 +89,13 @@ def get_preview_image(fname, meta_xml=None, maxwh=256, series=0):
         img = bioformats.load_image(fname, t=0, z=z, series=series,
                                     rescale=False)
         return zoom(img, (f, f, 1))
-    else:
-        # Grayscale, grab channel 0 only
-        img = bioformats.load_image(fname, c=0, t=0, z=z, series=series,
-                                    rescale=False)
-        # if img.dtype in (np.uint16, np.uint32, np.int16, np.int32):
-        img = stretch_contrast(img)
-        return zoom(img, f)
+
+    # Grayscale, grab channel 0 only
+    img = bioformats.load_image(fname, c=0, t=0, z=z, series=series,
+                                rescale=False)
+    # if img.dtype in (np.uint16, np.uint32, np.int16, np.int32):
+    img = stretch_contrast(img)
+    return zoom(img, f)
 
 
 def save_image(img, output_path, overwrite=False):
@@ -99,13 +103,16 @@ def save_image(img, output_path, overwrite=False):
 
     Parameters
     ----------
-    img: ndarray
-        N x M array of grayscale pixel intentsities.
-    output_path: str
-        Path to which the output file is to be saved.
-    overwrite: boolean, (default False)
-        Specifies whether or not to overwrite an existing file if a
-        file already exist at the output path.
+    :param img: N x M array of grayscale pixel intentsities.
+    :type img: ndarray
+    :param output_path: Path to which the output file is to be saved.
+    :type output_path: string
+    :param overwrite: Specifies whether or not to overwrite an existing file if
+        a file already exist at the output path.
+    :type overwrite: bool
+
+    :raises Exception: bla
+
     """
     if os.path.exists(output_path):
         if not overwrite:

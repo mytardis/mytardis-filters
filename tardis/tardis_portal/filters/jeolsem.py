@@ -4,7 +4,6 @@ from six import BytesIO
 
 from ..models import Schema, ParameterName
 from ..ParameterSetManager import ParameterSetManager
-from ..models.parameters import DatasetParameter
 
 logger = logging.getLogger(__name__)
 
@@ -68,7 +67,7 @@ class JEOLSEMFilter(object):
             try:
                 return ParameterSetManager(ps) \
                     .get_param('metadata-filename', True)
-            except DatasetParameter.DoesNotExist:
+            except Exception:
                 return None
 
         def processed_files(dataset):

@@ -77,9 +77,11 @@ class PdfImageFilter(object):
         """post save callback entry point.
 
         :param sender: The model class.
-        :param instance: The actual instance being saved.
-        :param created: A boolean; True if a new record was created.
-        :type created: bool
+        :type sender: class
+        :param kwargs: extra args
+        :type kwargs: object
+        :return none
+        :rtype none
         """
         instance = kwargs.get('instance')
 
@@ -144,10 +146,6 @@ class PdfImageFilter(object):
         """
         parameters = self.getParameters(schema, metadata)
 
-        # Some/all? of these excludes below are specific to DM3 format:
-
-        exclude_line = dict()
-
         if not parameters:
             print "Bailing out of saveMetadata because of 'not parameters'."
             return None
@@ -166,26 +164,22 @@ class PdfImageFilter(object):
         for p in parameters:
             print p.name
             if p.name in metadata:
-                dfp = DatafileParameter(parameterset=ps,
-                                        name=p)
+                dfp = DatafileParameter(parameterset=ps, name=p)
                 if p.isNumeric():
                     if metadata[p.name] != '':
                         dfp.numerical_value = metadata[p.name]
                         dfp.save()
+                elif isinstance(metadata[p.name], list):
+                    for val in reversed(metadata[p.name]):
+                        strip_val = val.strip()
+                        if strip_val:
+                            dfp = DatafileParameter(parameterset=ps,
+                                                    name=p)
+                            dfp.string_value = strip_val
+                            dfp.save()
                 else:
-                    print p.name
-                    if isinstance(metadata[p.name], list):
-                        for val in reversed(metadata[p.name]):
-                            strip_val = val.strip()
-                            if strip_val:
-                                if strip_val not in exclude_line:
-                                    dfp = DatafileParameter(parameterset=ps,
-                                                            name=p)
-                                    dfp.string_value = strip_val
-                                    dfp.save()
-                    else:
-                        dfp.string_value = metadata[p.name]
-                        dfp.save()
+                    dfp.string_value = metadata[p.name]
+                    dfp.save()
 
         return ps
 
@@ -202,7 +196,7 @@ class PdfImageFilter(object):
             if p in self.tagsToExclude:
                 continue
 
-            parameter = filter(lambda x: x.name == p, param_objects)
+            parameter = filter(lambda x: x.name == p, param_objects)  # pylint: disable=cell-var-from-loop
 
             if parameter:
                 parameters.append(parameter[0])

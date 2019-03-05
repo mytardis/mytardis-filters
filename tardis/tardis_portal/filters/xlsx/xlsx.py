@@ -64,6 +64,10 @@ class XlsxImageFilter(object):
     :type name: string
     :param schema: the name of the schema to load the EXIF data into.
     :type schema: string
+    :param ssconvert: path to ssconvert library
+    :type ssconvert: string
+    :param metadata_path: path to store metadata
+    :type metadata_path: string
     :param tagsToFind: a list of the tags to include.
     :type tagsToFind: list of strings
     :param tagsToExclude: a list of the tags to exclude.
@@ -83,9 +87,11 @@ class XlsxImageFilter(object):
         """post save callback entry point.
 
         :param sender: The model class.
-        :param instance: The actual instance being saved.
-        :param created: A boolean; True if a new record was created.
-        :type created: bool
+        :type sender: class
+        :param kwargs: extra args
+        :type kwargs: object
+        :return none
+        :rtype none
         """
         instance = kwargs.get('instance')
 
@@ -189,24 +195,21 @@ class XlsxImageFilter(object):
         for p in parameters:
             print p.name
             if p.name in metadata:
-                dfp = DatafileParameter(parameterset=ps,
-                                        name=p)
+                dfp = DatafileParameter(parameterset=ps, name=p)
                 if p.isNumeric():
                     if metadata[p.name] != '':
                         dfp.numerical_value = metadata[p.name]
                         dfp.save()
+                elif isinstance(metadata[p.name], list):
+                    for val in reversed(metadata[p.name]):
+                        strip_val = val.strip()
+                        if strip_val:
+                            dfp = DatafileParameter(parameterset=ps, name=p)
+                            dfp.string_value = strip_val
+                            dfp.save()
                 else:
-                    print p.name
-                    if isinstance(metadata[p.name], list):
-                        for val in reversed(metadata[p.name]):
-                            strip_val = val.strip()
-                            if strip_val:
-                                dfp = DatafileParameter(parameterset=ps, name=p)
-                                dfp.string_value = strip_val
-                                dfp.save()
-                    else:
-                        dfp.string_value = metadata[p.name]
-                        dfp.save()
+                    dfp.string_value = metadata[p.name]
+                    dfp.save()
 
         return ps
 
@@ -223,7 +226,7 @@ class XlsxImageFilter(object):
             if p in self.tagsToExclude:
                 continue
 
-            parameter = filter(lambda x: x.name == p, param_objects)
+            parameter = filter(lambda x: x.name == p, param_objects)  # pylint: disable=cell-var-from-loop
 
             if parameter:
                 parameters.append(parameter[0])

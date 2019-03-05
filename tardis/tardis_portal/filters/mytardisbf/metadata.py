@@ -1,9 +1,11 @@
 import logging
 import os
-import bioformats
-import javabridge
-import previewimage
 from xml.etree import ElementTree as et
+
+import bioformats  # pylint: disable=import-error
+import javabridge  # pylint: disable=import-error
+
+from .previewimage import get_preview_image, save_image
 
 logger = logging.getLogger(__name__)
 
@@ -14,14 +16,15 @@ def get_original_metadata(omexml):
 
     Parameters
     ----------
-    omexml: str
-        OME XML metadata
+    :param omexml: OME XML metadata
+    :type omexml: string
 
     Returns
     -------
-    orig_meta: dict
-        Dict containing key and value pairs for each original
+    :return: Dict containing key and value pairs for each original
         metadata element
+    :rtype: dict
+
     """
     meta_xml = et.fromstring(omexml.encode('utf-8'))
     sa = '{http://www.openmicroscopy.org/' \
@@ -45,13 +48,14 @@ def get_namespaces(meta_xml_root):
 
     Parameters
     ----------
-    meta_xml_root: Element
-                   Root ElementTree element
+    :param meta_xml_root: Root ElementTree element
+    :type meta_xml_root: element
 
     Returns
     -------
-    ns : dict
-         Dictionary with the OME and SA namespaces
+    :return: Dictionary with the OME and SA namespaces
+    :rtype: dict
+
     """
     ome_ns = meta_xml_root.tag[1:].split("}", 1)[0]
     sa_ns = ome_ns.replace("OME", "SA")
@@ -64,14 +68,18 @@ def get_meta(input_file_path, output_path, **kwargs):
 
     Parameters
     ----------
-    input_file_path: str
-        Input file path
-    output_path: str
+    :param input_file_path: Path to the input file
+    :type input_file_path: string
+    :param output_path: Path to the output file
+    :type output_path: string
+    :param kwargs: extra args
+    :type kwargs: object
 
     Returns
     -------
-    meta: [dict]
-        List of dicts containing with keys and values for specific metadata
+    :return: List of dicts containing with keys and values for specific metadata
+    :rtype: dict
+
     """
     pix_exc = set(["id", "significantbits", "bigendian", "interleaved"])
     channel_exc = set(["color", "id", "color", "contrastmethod", "fluor",
@@ -80,15 +88,13 @@ def get_meta(input_file_path, output_path, **kwargs):
     input_fname, ext = os.path.splitext(os.path.basename(input_file_path))
     if ext[1:] not in bioformats.READABLE_FORMATS:
         logger.debug("Unsupported format: %s.%s" % (input_fname, ext))
-        return
+        return None
 
     try:
-        omexml = bioformats.get_omexml_metadata(input_file_path) \
-            .encode('utf-8')
+        omexml = bioformats.get_omexml_metadata(input_file_path).encode('utf-8')
     except javabridge.jutil.JavaException:
-        logger.error("Unable to read OME Metadata from: %s",
-                     input_file_path)
-        return
+        logger.error("Unable to read OME Metadata from: %s", input_file_path)
+        return None
 
     meta_xml = et.fromstring(omexml)
     ome_ns = get_namespaces(meta_xml)
@@ -99,10 +105,10 @@ def get_meta(input_file_path, output_path, **kwargs):
                                         input_fname + "_s%s.png" % i)
         logger.debug("Generating series %s preview from image: %s",
                      i, input_file_path)
-        img = previewimage.get_preview_image(input_file_path, omexml, series=i)
+        img = get_preview_image(input_file_path, omexml, series=i)
         logger.debug("Saving series %s preview from image: %s",
                      i, input_file_path)
-        previewimage.save_image(img, output_file_path, overwrite=True)
+        save_image(img, output_file_path, overwrite=True)
         logger.debug("Extracting metadata for series %s preview from image: %s",
                      i, input_file_path)
         smeta['id'] = img_meta.attrib['ID']
@@ -134,8 +140,19 @@ def get_ome_metadata(input_file_path, output_path, **kwargs):
 
     Parameters
     ----------
-    input_file_path: str
-        Path to the input file
+    :param input_file_path: Path to the input file
+    :type input_file_path: string
+    :param output_path: Path to the output file
+    :type output_path: string
+    :param kwargs: extra args
+    :type kwargs: object
+
+    Returns
+    -------
+    :return: Path to the output file
+    :rtype: dict
+
+    :raises Exception: bla
 
     """
     input_fname, ext = os.path.splitext(os.path.basename(input_file_path))

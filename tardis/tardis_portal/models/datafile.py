@@ -277,7 +277,7 @@ class DataFile(models.Model):
 
         :param bool verified_only: if False return files without verified
              checksums
-        :returns: Python file object
+        :return: Python file object
         :rtype: Python File object
         """
 

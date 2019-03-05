@@ -220,7 +220,7 @@ class CsvImageFilter(object):
             if p in self.tagsToExclude:
                 continue
 
-            parameter = filter(lambda x: x.name == p, param_objects)
+            parameter = filter(lambda x: x.name == p, param_objects)  # pylint: disable=cell-var-from-loop
 
             if parameter:
                 parameters.append(parameter[0])

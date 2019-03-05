@@ -1,8 +1,10 @@
-from tardis.celery import tardis_app
+from importlib import import_module
+
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
+
+from tardis.celery import tardis_app
 from .models.datafile import DataFile, DataFileObject
-from importlib import import_module
 
 
 def safe_import(path, args, kw):

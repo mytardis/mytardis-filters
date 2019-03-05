@@ -11,10 +11,10 @@ from django.core.cache import caches
 
 from celery.task import task
 
-import bioformats
-from bioformats import log4j
+import bioformats  # pylint: disable=import-error
+from bioformats import log4j  # pylint: disable=import-error
 
-import javabridge
+import javabridge  # pylint: disable=import-error
 
 from tardis.tardis_portal.models import Schema, DatafileParameterSet
 from tardis.tardis_portal.models import ParameterName, DatafileParameter
@@ -40,15 +40,17 @@ def acquire_datafile_lock(datafile_id, cache_name='celery-locks'):
 
     Parameters
     ----------
-    datafile_id: int
-        ID of the datafile
-    cache_name: string (default = "celery-locks")
-        Optional specify the name of the lock cache to store this lock in
+    :param datafile_id: ID of the datafile
+    :type datafile_id: int
+    :param cache_name: Optional specify the name of the lock cache to store
+        this lock in
+    :type cache_name: string
 
     Returns
     -------
-    locked: boolean
-        Boolean representing whether datafile is locked
+    :return: Boolean representing whether datafile is locked
+    :rtype: boolean
+
     """
     lockid = generate_lockid(datafile_id)
     cache = caches[cache_name]
@@ -60,10 +62,12 @@ def release_datafile_lock(datafile_id, cache_name='celery-locks'):
 
     Parameters
     ----------
-    datafile_id: int
-        ID of the datafile
-    cache_name: string (default = "celery-locks")
-        Optional specify the name of the lock cache to store this lock in
+    :param datafile_id: ID of the datafile
+    :type datafile_id: int
+    :param cache_name: Optional specify the name of the lock cache to store
+        this lock in
+    :type cache_name: string
+
     """
     lockid = generate_lockid(datafile_id)
     cache = caches[cache_name]
@@ -93,10 +97,13 @@ def delete_old_parameterset(ps):
 
     Parameters
     ----------
-    ps: ParameterSet
-        A ParameterSet instance to remove
+    :param ps: A ParameterSet instance to remove
+    :type ps: ParameterSet
+
     """
-    for dfp in DatafileParameter.objects.get(parameterset=ps):
+
+    params = DatafileParameter.objects.get(parameterset=ps)
+    for dfp in params.iteritems():
         dfp.delete()
     ps.delete()
 
@@ -106,19 +113,18 @@ def save_parameters(schema, param_set, params):
 
     Parameters
     ----------
-    schema: tardis.tardis_portal.models.Schema
-        Schema that describes the parameter names.
-    param_set: tardis.tardis_portal.models.DatafileParameterSet
-        Parameterset that these parameters are to be associated with.
-    params: dict
+    :param schema: Schema that describes the parameter names.
+    :type schema: tardis.tardis_portal.models.Schema
+    :param param_set: Parameterset that these parameters are
+        to be associated with.
+    :type param_set: tardis.tardis_portal.models.DatafileParameterSet
+    :param params:
         Dictionary with ParameterNames as keys and the Parameters as values.
         Parameters (values) can be singular strings/numerics or a list of
         strings/numeric. If it's a list, each element will be saved as a
         new DatafileParameter.
+    :type params: dict
 
-    Returns
-    -------
-    None
     """
 
     def savep(paramk, paramv):
@@ -154,78 +160,74 @@ def process_meta_file_output(df_id, schema_name, overwrite=False, **kwargs):
 
     Parameters
     ----------
-    df_id: int
-        ID of Datafile instance to process.
-    schema_name: str
-        Names of schema which describes ParameterNames
-    add: Boolean (default: False)
-        Specifies whether or not to add to an existing Parameterset for this
-        Datafile rather that overwriting or exiting.
-    overwrite: Boolean (default: False)
-        Specifies whether to overwrite any exisiting parametersets for
-        this datafile.
+    :param df_id: ID of Datafile instance to process.
+    :type df_id: int
+    :param schema_name: Names of schema which describes ParameterNames
+    :type schema_name: string
+    :param overwrite: Specifies whether to overwrite any exisiting parametersets
+        for this datafile.
+    :type overwrite: boolean
+    :param kwargs: extra args
 
-
-    Returns
-    -------
-    None
     """
     from .metadata import get_meta
 
-    if acquire_datafile_lock(df_id):
-        # Need to start a JVM in each thread
-        check_and_start_jvm()
+    if not acquire_datafile_lock(df_id):
+        return
 
-        try:
-            javabridge.attach()
-            log4j.basic_config()
-            print(schema_name)
-            schema = Schema.objects.get(namespace__exact=schema_name)
-            df = DataFile.objects.get(id=df_id)
-            if DatafileParameterSet.objects \
-                    .filter(schema=schema, datafile=df).exists():
-                if overwrite:
-                    psets = DatafileParameterSet.objects.get(schema=schema,
-                                                             datafile=df)
-                    logger.warning("Overwriting parametersets for %s",
-                                   df.filename)
-                    for ps in psets:
-                        delete_old_parameterset(ps)
-                else:
-                    logger.warning("Parametersets for %s already exist.",
-                                   df.filename)
-                    return
+    # Need to start a JVM in each thread
+    check_and_start_jvm()
 
-            dfo = DataFileObject.objects.filter(datafile__id=df.id,
-                                                verified=True).first()
-            input_file_path = dfo.get_full_path()
-
-            output_rel_path = os.path.join(
-                os.path.dirname(urlparse.urlparse(dfo.uri).path),
-                str(df.id))
-            output_path = os.path.join(
-                settings.METADATA_STORE_PATH, output_rel_path)
-
-            if not os.path.exists(output_path):
-                os.makedirs(output_path)
-
-            logger.debug("Processing file: %s" % input_file_path)
-            metadata_params = get_meta(input_file_path, output_path, **kwargs)
-            if not metadata_params:
-                logger.debug("No metadata to save")
+    try:
+        javabridge.attach()
+        log4j.basic_config()
+        print(schema_name)
+        schema = Schema.objects.get(namespace__exact=schema_name)
+        df = DataFile.objects.get(id=df_id)
+        if DatafileParameterSet.objects \
+                .filter(schema=schema, datafile=df).exists():
+            if overwrite:
+                psets = DatafileParameterSet.objects.get(schema=schema,
+                                                         datafile=df)
+                logger.warning("Overwriting parametersets for %s",
+                               df.filename)
+                for ps in psets:
+                    delete_old_parameterset(ps)
+            else:
+                logger.warning("Parametersets for %s already exist.",
+                               df.filename)
                 return
 
-            for sm in metadata_params:
-                ps = DatafileParameterSet(schema=schema, datafile=df)
-                ps.save()
+        dfo = DataFileObject.objects.filter(datafile__id=df.id,
+                                            verified=True).first()
+        input_file_path = dfo.get_full_path()
 
-                logger.debug("Saving parameters for: %s", input_file_path)
-                save_parameters(schema, ps, sm)
-        except Exception as err:
-            logger.error(err)
-        finally:
-            release_datafile_lock(df_id)
-            javabridge.detach()
+        output_rel_path = os.path.join(
+            os.path.dirname(urlparse.urlparse(dfo.uri).path),
+            str(df.id))
+        output_path = os.path.join(
+            settings.METADATA_STORE_PATH, output_rel_path)
+
+        if not os.path.exists(output_path):
+            os.makedirs(output_path)
+
+        logger.debug("Processing file: %s" % input_file_path)
+        metadata_params = get_meta(input_file_path, output_path, **kwargs)
+        if not metadata_params:
+            logger.debug("No metadata to save")
+            return
+
+        for sm in metadata_params:
+            ps = DatafileParameterSet(schema=schema, datafile=df)
+            ps.save()
+
+            logger.debug("Saving parameters for: %s", input_file_path)
+            save_parameters(schema, ps, sm)
+    except Exception as err:
+        logger.error(err)
+    finally:
+        release_datafile_lock(df_id)
+        javabridge.detach()
 
 
 @task(name="tardis_portal.filters.mytardisbf.process_meta", ignore_result=True)
@@ -235,69 +237,65 @@ def process_meta(df_id, schema_name, overwrite=False, **kwargs):
 
     Parameters
     ----------
-    df_id: int
-        ID of Datafile instance to process.
-    schema_name: str
-        Names of schema which describes ParameterNames
-    add: boolean (default: False)
-        Specifies whether or not to add to an existing Parameterset for this
-        Datafile rather that overwriting or exiting.
-    overwrite: boolean (default: False)
-        Specifies whether to overwrite any exisiting parametersets for
-        this datafile.
+    :param df_id: ID of Datafile instance to process.
+    :type df_id: int
+    :param schema_name: Names of schema which describes ParameterNames
+    :type schema_name: string
+    :param overwrite: Specifies whether to overwrite any exisiting parametersets
+        for this datafile.
+    :type overwrite: boolean
+    :param kwargs: extra args
 
-
-    Returns
-    -------
-    None
     """
     from .metadata import get_meta
 
-    if acquire_datafile_lock(df_id):
-        # Need to start a JVM in each thread
-        check_and_start_jvm()
+    if not acquire_datafile_lock(df_id):
+        return
 
-        try:
-            javabridge.attach()
-            log4j.basic_config()
-            schema = Schema.objects.get(namespace__exact=schema_name)
-            df = DataFile.objects.get(id=df_id)
-            if DatafileParameterSet.objects \
-                    .filter(schema=schema, datafile=df).exists():
-                if overwrite:
-                    psets = DatafileParameterSet.objects.get(schema=schema,
-                                                             datafile=df)
-                    logger.warning("Overwriting parametersets for %s",
-                                   df.filename)
-                    for ps in psets:
-                        delete_old_parameterset(ps)
-                else:
-                    logger.warning("Parametersets for %s already exist.",
-                                   df.filename)
-                    return
+    # Need to start a JVM in each thread
+    check_and_start_jvm()
 
-            dfo = DataFileObject.objects.filter(datafile__id=df.id,
-                                                verified=True).first()
-            input_file_path = dfo.get_full_path()
-
-            logger.debug("Processing file: %s", input_file_path)
-            metadata_params = get_meta(input_file_path, **kwargs)
-
-            if not metadata_params:
-                logger.debug("No metadata to save")
+    try:
+        javabridge.attach()
+        log4j.basic_config()
+        schema = Schema.objects.get(namespace__exact=schema_name)
+        df = DataFile.objects.get(id=df_id)
+        if DatafileParameterSet.objects \
+                .filter(schema=schema, datafile=df).exists():
+            if overwrite:
+                psets = DatafileParameterSet.objects.get(schema=schema,
+                                                         datafile=df)
+                logger.warning("Overwriting parametersets for %s",
+                               df.filename)
+                for ps in psets:
+                    delete_old_parameterset(ps)
+            else:
+                logger.warning("Parametersets for %s already exist.",
+                               df.filename)
                 return
 
-            for sm in metadata_params:
-                ps = DatafileParameterSet(schema=schema, datafile=df)
-                ps.save()
+        dfo = DataFileObject.objects.filter(datafile__id=df.id,
+                                            verified=True).first()
+        input_file_path = dfo.get_full_path()
 
-                logger.debug("Saving parameters for: %s", input_file_path)
-                save_parameters(schema, ps, sm)
-        except Exception as err:
-            logger.error(err)
-        finally:
-            release_datafile_lock(df_id)
-            javabridge.detach()
+        logger.debug("Processing file: %s", input_file_path)
+        metadata_params = get_meta(input_file_path, **kwargs)
+
+        if not metadata_params:
+            logger.debug("No metadata to save")
+            return
+
+        for sm in metadata_params:
+            ps = DatafileParameterSet(schema=schema, datafile=df)
+            ps.save()
+
+            logger.debug("Saving parameters for: %s", input_file_path)
+            save_parameters(schema, ps, sm)
+    except Exception as err:
+        logger.error(err)
+    finally:
+        release_datafile_lock(df_id)
+        javabridge.detach()
 
 
 class MetadataFilter(object):
@@ -321,12 +319,9 @@ class MetadataFilter(object):
 
         Parameters
         ----------
-        sender: Model
-            class of the model
-        instance: model Instance
-            Instance of model being saved.
-        created: boolean
-            Specifies whether a new record is being created.
+        :param sender: class of the model
+        :type sender: class
+        :param kwargs: extra args
         """
         instance = kwargs.get('instance')
         # bfqueue = getattr(settings, 'BIOFORMATS_QUEUE', 'celery')
