@@ -91,7 +91,7 @@ podTemplate(
         }
         stage('Deploy image to Kubernetes') {
             container('kubectl') {
-                ['celery-filter'].each { item ->
+                ['celery-filters'].each { item ->
                     sh ("kubectl -n ${k8sDeploymentNamespace} set image deployment/${item} ${item}=${dockerImageFullNameTag}")
                 }
             }
