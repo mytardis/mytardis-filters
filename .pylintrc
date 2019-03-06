@@ -81,6 +81,7 @@ disable=C0103,
     C0330,
     C1001,
     E1101,
+    E1111, # disable linter's error E1111 as it is buggy
     I0011,
     R0201,
     R0205,
@@ -239,9 +240,15 @@ ignore-imports=no
 # mixin class is detected if its name ends with "mixin" (case insensitive).
 ignore-mixin-members=yes
 
+# List of module names for which member attributes should not be checked
+# (useful for modules/projects where namespaces are manipulated during runtime
+# and thus existing member attributes cannot be deduced by static analysis. It
+# supports qualified module names, as well as Unix pattern matching.
+ignored-modules=numpy
+
 # List of classes names for which member attributes should not be checked
 # (useful for classes with attributes dynamically set).
-ignored-classes=SQLObject
+ignored-classes=SQLObject,numpy
 
 # List of members which are set dynamically and missed by pylint inference
 # system, and so shouldn't trigger E0201 when accessed. Python regular

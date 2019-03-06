@@ -11,10 +11,9 @@ from django.core.cache import caches
 
 from celery.task import task
 
+import javabridge  # pylint: disable=import-error
 import bioformats  # pylint: disable=import-error
 from bioformats import log4j  # pylint: disable=import-error
-
-import javabridge  # pylint: disable=import-error
 
 from tardis.tardis_portal.models import Schema, DatafileParameterSet
 from tardis.tardis_portal.models import ParameterName, DatafileParameter

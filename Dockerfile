@@ -18,7 +18,6 @@ RUN apt-get update -yqq && \
 		python-dev \
 		python-pip \
 		python-setuptools \
-		python-magic \
 		# C
 		gcc \
 		# Java
@@ -53,27 +52,13 @@ COPY policy.xml /etc/ImageMagick-6/policy.xml
 
 FROM base AS builder
 
-ADD . /app
-
+RUN mkdir /app
 WORKDIR /app
 
+COPY requirements.txt /app
 RUN pip install -r requirements.txt
 
-# RUN mkdir -p tardis/tardis_portal/filters
-
-# RUN pip install git+https://github.com/mytardis/mytardisbf.git@0.1.1#egg=mytardisbf
-
-# RUN git clone https://github.com/mytardis/mytardisbf.git tardis/tardis_portal/filters/mytardisbf
-RUN pip install -r tardis/tardis_portal/filters/mytardisbf/requirements.txt
-
-# RUN git clone https://github.com/mytardis/fcs-mytardis-filter.git tardis/tardis_portal/filters/fcs
-RUN pip install -r tardis/tardis_portal/filters/fcs/requirements.txt
-
-# RUN git clone https://github.com/mytardis/pdf-mytardis-filter.git tardis/tardis_portal/filters/pdf
-
-# RUN git clone https://github.com/mytardis/xlsx-mytardis-filter.git tardis/tardis_portal/filters/xlsx
-
-# RUN git clone https://github.com/mytardis/csv-mytardis-filter tardis/tardis_portal/filters/csv
+ADD . /app
 
 CMD ["celery", "worker", "--app=tardis.celery.tardis_app", "--queues=filters", "--loglevel=info"]
 

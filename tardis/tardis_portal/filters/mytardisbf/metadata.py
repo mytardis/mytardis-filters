@@ -2,8 +2,8 @@ import logging
 import os
 from xml.etree import ElementTree as et
 
-import bioformats  # pylint: disable=import-error
 import javabridge  # pylint: disable=import-error
+import bioformats  # pylint: disable=import-error
 
 from .previewimage import get_preview_image, save_image
 

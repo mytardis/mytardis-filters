@@ -420,7 +420,7 @@ class DataFile(models.Model):
             return self.mimetype
         fo = self.file_object
         if mimetype is None and fo is not None:
-            m = magic.Magic(mime_and_encoding=True)
+            m = magic.Magic(mime_encoding=True)
             mimetype = m.from_buffer(fo.read(1024))
             fo.close()
         if mimetype is None:

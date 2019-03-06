@@ -1,7 +1,7 @@
 import os
 import numpy as np  # pylint: disable=import-error
-import bioformats  # pylint: disable=import-error
 from scipy.ndimage import zoom  # pylint: disable=import-error
+import bioformats  # pylint: disable=import-error
 
 
 def stretch_contrast(img):
@@ -18,9 +18,11 @@ def stretch_contrast(img):
     :rtype: numpy.ndarray (dtype = np.int8)
 
     """
+
     s = np.subtract(img, np.min(img))
     p = 255.0 / (np.max(img) - np.min(img))
     out = np.round(np.multiply(s, p)).astype(np.uint8)
+
     return out
 
 
