@@ -122,11 +122,12 @@ def get_meta(input_file_path, output_path, **kwargs):
             for c, channel_meta in enumerate(
                     pix_meta.findall('ome:Channel', ome_ns)):
                 for kc, vc in channel_meta.attrib.iteritems():
-                    if kc.lower() not in channel_exc:
-                        if kc.lower() not in smeta:
-                            smeta[kc.lower()] = ["Channel %s: %s" % (c, vc)]
-                        else:
-                            smeta[kc.lower()].append("Channel %s: %s" % (c, vc))
+                    if kc.lower() in channel_exc:
+                        continue
+                    if kc.lower() not in smeta:
+                        smeta[kc.lower()] = ["Channel %s: %s" % (c, vc)]
+                    else:
+                        smeta[kc.lower()].append("Channel %s: %s" % (c, vc))
 
         meta.append(smeta)
 
