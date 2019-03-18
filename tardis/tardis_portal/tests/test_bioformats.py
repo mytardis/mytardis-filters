@@ -38,7 +38,8 @@ class BioformatsFilterTestCase(TransactionTestCase):
         self.assertTrue(
             'id' in results and results['id'] == 'Image:0')
         self.assertTrue(
-            'dimensionorder' in results and results['dimensionorder'] == 'XYZCT')
+            'dimensionorder' in results and results[
+                'dimensionorder'] == 'XYZCT')
 
         # Cleanup
         helpers.delete_datafile(uri)
