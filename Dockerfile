@@ -60,11 +60,13 @@ RUN pip install -r requirements.txt
 
 ADD . /app
 
-CMD ["celery", "worker", "--app=tardis.celery.tardis_app", "--queues=filters", "--loglevel=info"]
+CMD ["celery", "worker", "--app=tardis.celery.app", "--queues=filters", "--loglevel=info"]
 
 FROM builder AS test
 
 RUN pip install -r requirements-test.txt
+
+RUN mkdir /var/store
 
 # This will keep container running...
 CMD ["tail", "-f", "/dev/null"]

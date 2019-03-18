@@ -1,53 +1,57 @@
 debug: False
 secret_key: 't@ajg*8l(i+x8h4g8j!%n=h7g-w_5+17)e7jc72q8$*j3$s$1='
-postgres:
-  host: db
-  port: 5432
-  user: user
-  password: password
-  db: postgres
+installed_apps:
+  - django.contrib.contenttypes
+  - tardis.tardis_portal
+caches:
+  default:
+    BACKEND: django.core.cache.backends.memcached.MemcachedCache
+    LOCATION: memcached:11211
 rabbitmq:
   host: rabbitmq
   port: 5672
   user: user
   password: password
   vhost: /
+api:
+  queue: celery
+  task_priority: 5
 celery:
-  default_queue: 'filters'
+  result_backend: rpc
   max_task_priority: 10
+  default_queue: filters
   default_task_priority: 5
-  imports:
-    - 'tardis.tardis_portal.tasks'
-    - 'tardis.tardis_portal.filters.mytardisbf.mytardisbf'
-    - 'tardis.tardis_portal.filters.fcs.fcs'
-metadata_store_path: '/var/store/metadata/'
+  acks_late: True
+default_file_storage: tardis.tardis_portal.storage.MyTardisLocalFileSystemStorage
+store_data: /var/store/
+metadata_store_path: /var/store/metadata/
 post_save_filters:
   - !!python/tuple
-    - 'tardis.tardis_portal.filters.mytardisbf.mytardisbf.make_filter'
+    - tardis.tardis_portal.filters.mytardisbf.mytardisbf.make_filter
     -
-      - 'BioformatsMetadata'
-      - 'http://tardis.edu.au/schemas/bioformats/2'
+      - Bioformats
+      - http://tardis.edu.au/schemas/bioformats/2
   - !!python/tuple
-    - 'tardis.tardis_portal.filters.fcs.fcs.make_filter'
+    - tardis.tardis_portal.filters.fcs.fcs.make_filter
     -
-      - 'FCS'
-      - 'http://tardis.edu.au/schemas/fcs/1'
-      - '/app/tardis/tardis_portal/filters/fcs/bin/fcsplot'
-      - '/app/tardis/tardis_portal/filters/fcs/bin/showinf'
+      - FCS
+      - http://tardis.edu.au/schemas/fcs/1
+      - /app/tardis/tardis_portal/filters/fcs/bin/fcsplot
+      - /app/tardis/tardis_portal/filters/fcs/bin/showinf
   - !!python/tuple
-    - 'tardis.tardis_portal.filters.pdf.pdf.make_filter'
+    - tardis.tardis_portal.filters.pdf.pdf.make_filter
     -
-      - 'PDF'
-      - 'http://tardis.edu.au/schemas/pdf/1'
+      - PDF
+      - http://tardis.edu.au/schemas/pdf/1
   - !!python/tuple
-    - 'tardis.tardis_portal.filters.xlsx.xlsx.make_filter'
+    - tardis.tardis_portal.filters.xlsx.xlsx.make_filter
     -
-      - 'XLSX'
-      - 'http://tardis.edu.au/schemas/xlsx/1'
-      - '/usr/bin/ssconvert'
+      - XLSX
+      - http://tardis.edu.au/schemas/xlsx/1
+      - /usr/bin/ssconvert
   - !!python/tuple
-    - 'tardis.tardis_portal.filters.csv.csv.make_filter'
+    - tardis.tardis_portal.filters.csv.csv.make_filter
     -
-      - 'CSV'
-      - 'http://tardis.edu.au/schemas/csv/1'
-      - '/usr/bin/ssconvert'
+      - CSV
+      - http://tardis.edu.au/schemas/csv/1
+      - /usr/bin/ssconvert

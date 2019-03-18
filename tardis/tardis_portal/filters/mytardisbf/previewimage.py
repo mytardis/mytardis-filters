@@ -59,7 +59,7 @@ def get_preview_image(fname, meta_xml=None, maxwh=256, series=0):
     if not meta_xml:
         meta_xml = bioformats.get_omexml_metadata(fname)
 
-    ome = bioformats.OMEXML(meta_xml)
+    ome = bioformats.OMEXML(meta_xml.decode('utf-8'))
 
     if series > ome.get_image_count():
         raise Exception("Specified series number %s exceeds number of series "

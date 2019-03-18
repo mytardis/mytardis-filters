@@ -1,6 +1,6 @@
 from __future__ import absolute_import
-from celery import Celery  # pylint: disable=import-error
+from celery import Celery
 
-tardis_app = Celery('tardis')
-tardis_app.config_from_object('django.conf:settings')
-tardis_app.autodiscover_tasks()
+app = Celery('tardis')
+app.config_from_object('django.conf:settings')
+app.autodiscover_tasks()

@@ -2,8 +2,8 @@ import logging
 import os
 from xml.etree import ElementTree as et
 
-import javabridge  # pylint: disable=import-error
-import bioformats  # pylint: disable=import-error
+import javabridge
+import bioformats
 
 from .previewimage import get_preview_image, save_image
 
@@ -63,7 +63,8 @@ def get_namespaces(meta_xml_root):
 
 
 def get_meta(input_file_path, output_path, **kwargs):
-    """ Extract specific metadata typically used in bio-image analysis. Also
+    """
+    Extract specific metadata typically used in bio-image analysis. Also
     outputs a preview image to the output directory.
 
     Parameters
@@ -85,16 +86,14 @@ def get_meta(input_file_path, output_path, **kwargs):
     channel_exc = set(["color", "id", "color", "contrastmethod", "fluor",
                        "ndfilter", "illuminationtype", "name",
                        "pockelcellsetting", "acquisitionmode"])
-    input_fname, ext = os.path.splitext(os.path.basename(input_file_path))
-    if ext[1:] not in bioformats.READABLE_FORMATS:
-        logger.debug("Unsupported format: %s.%s" % (input_fname, ext))
-        return None
 
     try:
         omexml = bioformats.get_omexml_metadata(input_file_path).encode('utf-8')
     except javabridge.jutil.JavaException:
         logger.error("Unable to read OME Metadata from: %s", input_file_path)
         return None
+
+    input_fname, _ = os.path.splitext(os.path.basename(input_file_path))
 
     meta_xml = et.fromstring(omexml)
     ome_ns = get_namespaces(meta_xml)
