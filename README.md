@@ -1,11 +1,9 @@
-```
-python manage.py createcachetable celery_lock_cache
-```
+Following schema load has to be done on MyTardis:
 
 ```
-python manage.py loaddata tardis/tardis_portal/filters/mytardisbf/mytardisbf.json
-python manage.py loaddata tardis/tardis_portal/filters/fcs/fcs.json
-python manage.py loaddata tardis/tardis_portal/filters/pdf/pdf.json
-python manage.py loaddata tardis/tardis_portal/filters/xlsx/xlsx.json
-python manage.py loaddata tardis/tardis_portal/filters/csv/csv.json
+python manage.py loaddata tardis/filters/mytardisbf/mytardisbf.json
+python manage.py loaddata tardis/filters/fcs/fcs.json
+python manage.py loaddata tardis/filters/pdf/pdf.json
+python manage.py loaddata tardis/filters/xlsx/xlsx.json
+python manage.py loaddata tardis/filters/csv/csv.json
 ```
