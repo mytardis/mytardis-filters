@@ -25,16 +25,6 @@ podTemplate(
             resourceLimitMemory: '2Gi'
         ),
         containerTemplate(
-            name: 'postgres',
-            image: 'postgres:9.3',
-            alwaysPullImage: false,
-            envVars: [
-                envVar(key: 'POSTGRES_PASSWORD', value: 'postgres')
-            ],
-            resourceLimitCpu: '500m',
-            resourceLimitMemory: '1Gi'
-        ),
-        containerTemplate(
             name: 'kubectl',
             image: 'lachlanevenson/k8s-kubectl:v1.13.0',
             ttyEnabled: true,
