@@ -37,6 +37,9 @@ def run_filter(filter, id, filename, uri):
     # Import filter
     callable = safe_import(filter)
 
+    # No data
+    metadata = None
+
     # Lock filter call
     lock_id = "filter-{}-{}".format(filter[1][0].lower(), id)
     if acquire_lock(lock_id, 300):  # 5 mins lock
@@ -44,7 +47,6 @@ def run_filter(filter, id, filename, uri):
             # Run filter
             metadata = callable(id, filename, uri)
         except Exception as e:
-            metadata = None
             logger.error(str(e))
             logger.debug(traceback.format_exc())
         finally:
