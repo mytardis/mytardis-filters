@@ -15,9 +15,9 @@ RUN apt-get update -yqq && \
 		libsasl2-dev \
 		libssl-dev \
 		# Python
-		python-dev \
-		python-pip \
-		python-setuptools \
+		python3-dev \
+		python3-pip \
+		python3-setuptools \
 		# C
 		gcc \
 		# Java
@@ -41,7 +41,7 @@ RUN apt-get update -yqq && \
 		imagemagick && \
 	apt-get clean
 
-RUN pip install wheel
+RUN pip3 install wheel
 
 RUN echo "r <- getOption('repos'); r['CRAN'] <- 'https://cran.csiro.au/'; options(repos = r);" > ~/.Rprofile
 RUN Rscript -e "install.packages('BiocManager')"
@@ -56,7 +56,7 @@ RUN mkdir /app
 WORKDIR /app
 
 COPY requirements.txt /app
-RUN pip install -r requirements.txt
+RUN pip3 install -r requirements.txt
 
 ADD . /app
 
@@ -64,7 +64,7 @@ CMD ["celery", "worker", "--app=tardis.celery.app", "--queues=filters", "--logle
 
 FROM builder AS test
 
-RUN pip install -r requirements-test.txt
+RUN pip3 install -r requirements-test.txt
 
 RUN mkdir /var/store
 

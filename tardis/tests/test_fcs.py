@@ -12,7 +12,7 @@ class FcsFilterTestCase(TransactionTestCase):
         self.filter = helpers.get_filter_settings('FCS')
         self.callable = safe_import(self.filter)
 
-    def testThumbnail(self):
+    def testSimple(self):
         # Create mockup variables
         fname = 'sample.fcs'
         id = helpers.get_datafile_id()
@@ -22,7 +22,6 @@ class FcsFilterTestCase(TransactionTestCase):
 
         # Generate thumbnail and metadata
         results = self.callable(id, filename, uri)
-        print(results)
 
         # Basic schema checks
         self.assertTrue(isinstance(results, dict))

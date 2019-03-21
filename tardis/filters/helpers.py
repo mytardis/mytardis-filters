@@ -1,5 +1,5 @@
 import os
-import urlparse
+from urllib.parse import urlparse
 from importlib import import_module
 import subprocess
 import logging
@@ -85,7 +85,7 @@ def safe_import(filter):
 
 def get_thumbnail_paths(id, filename, uri, ext='png'):
     preview_image_rel_file_path = os.path.join(
-        os.path.dirname(urlparse.urlparse(uri).path),
+        os.path.dirname(urlparse(uri).path),
         str(id),
         '%s.%s' % (os.path.basename(filename), ext))
     return (preview_image_rel_file_path,

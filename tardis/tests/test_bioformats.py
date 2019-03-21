@@ -22,6 +22,7 @@ class BioformatsFilterTestCase(TransactionTestCase):
 
         # Generate thumbnail and extract metadata
         results = self.callable(id, filename, uri)
+        print(results)
 
         # Basic schema checks
         self.assertTrue(isinstance(results, dict))

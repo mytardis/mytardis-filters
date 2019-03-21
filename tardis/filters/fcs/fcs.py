@@ -43,7 +43,7 @@ def run_showinf(showinf_path, id, filename):
             'parametersAndStainsTable': ''
         }
 
-        image_info_list = results.split('\n')
+        image_info_list = results.decode().split('\n')
         readingParametersAndStainsTable = False
 
         for line in image_info_list:
@@ -100,7 +100,6 @@ class FcsImageFilter(fileFilter):
             return None
 
         logger.info("Applying FCS filter to {}...".format(filename))
-
         try:
             rsp = {}
 

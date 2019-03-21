@@ -36,8 +36,8 @@ post_save_filters:
     -
       - FCS
       - http://tardis.edu.au/schemas/fcs/1
-      - /app/tardis/filters/fcs/bin/fcsplot
-      - /app/tardis/filters/fcs/bin/showinf
+      - tardis/filters/fcs/bin/fcsplot
+      - tardis/filters/fcs/bin/showinf
   - !!python/tuple
     - tardis.filters.pdf.pdf.make_filter
     -

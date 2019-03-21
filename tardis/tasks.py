@@ -17,7 +17,7 @@ def apply_filters(id, verified, filename, uri):
 
     # Do not process unverified files
     if not verified:
-        logger.warn(
+        logger.warning(
             'Datafile (id={}) is not verified, skipping filters'.format(id))
     else:
         # Create sub-task for each filter

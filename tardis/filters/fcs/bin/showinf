@@ -9,39 +9,36 @@ import re
 import json
 from rpy2.robjects.packages import importr
 from rpy2.robjects import StrVector
-import rpy2.robjects as robjects
 
 if len(sys.argv) < 2:
-    print "Usage: showinf in_file.fcs"
+    print("Usage: showinf in_file.fcs")
     sys.exit(1)
 
 base = importr('base')
 flowCore = importr('flowCore')
-
-getmethod = robjects.baseenv.get("getMethod")
-
-descriptionMethod = \
-    getmethod("description",
-              signature=StrVector(["flowFrame", ]),
-              where="package:flowCore")
-
-exprsMethod = \
-    getmethod("exprs",
-              signature=StrVector(["flowFrame", ]),
-              where="package:flowCore")
+methods = importr('methods')
 
 flowSet = flowCore.read_flowSet(files=sys.argv[1], emptyValue=False,
                                 ignore_text_offset=True)
 frameName = base.ls(envir=flowSet.do_slot("frames"))
 flowFrame = base.get(frameName, envir=flowSet.do_slot("frames"))
 
-print ""
+descriptionMethod = \
+    methods.getMethod("description",
+              signature=StrVector(["flowFrame"]),
+              where="package:flowCore")
+
+exprsMethod = \
+    methods.getMethod("exprs",
+              signature=StrVector(["flowFrame"]),
+              where="package:flowCore")
+
+print("")
 
 thead = [
     {"$PnN": "Parameter\n($PnN)"},
     {"$PnS": "Stain\n($PnS)"}]
 
-# description = descriptionMethod(flowFrame, hideInternal=True)
 description = descriptionMethod(flowFrame)
 tbody = []
 channels = base.colnames(exprsMethod(flowFrame))
@@ -71,16 +68,16 @@ for i in range(0, len(description)):
 tbody = [channel for channel in tbody if '$PnS' in channel]
 
 if filename is not None:
-    print "File: %s" % filename
+    print("File: %s" % filename)
 if date is not None:
-    print "Date: %s" % date
+    print("Date: %s" % date)
 if cytometer is not None:
-    print "Cytometer: %s" % cytometer
+    print("Cytometer: %s" % cytometer)
 if total is not None:
-    print "# Cells: %s" % total
+    print("# Cells: %s" % total)
 
-print ""
-print "<ParametersAndStains>"
-print json.dumps({'thead': thead, 'tbody': tbody}, indent=2)
-print "</ParametersAndStains>"
-print ""
+print("")
+print("<ParametersAndStains>")
+print(json.dumps({'thead': thead, 'tbody': tbody}, indent=2))
+print("</ParametersAndStains>")
+print("")

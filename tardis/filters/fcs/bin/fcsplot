@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
 Usage: fcsplot in_file.fcs out_file.png
 Author: James Wettenhall <james.wettenhall@monash.edu>
@@ -10,7 +10,7 @@ from rpy2.robjects.packages import importr
 from rpy2.robjects import StrVector
 
 if len(sys.argv) < 3:
-    print "Usage: fcsplot in_file.fcs out_file.png"
+    print("Usage: fcsplot in_file.fcs out_file.png")
     sys.exit(1)
 
 graphics = importr('graphics')

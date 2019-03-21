@@ -103,12 +103,13 @@ def get_meta(input_file_path, output_path, **kwargs):
         smeta['name'] = img_meta.attrib['Name']
         smeta['previewImage'] = output_file_path
         for pix_meta in img_meta.findall('ome:Pixels', ome_ns):
-            for k, v in pix_meta.attrib.iteritems():
+            for k, v in pix_meta.attrib.items():
                 if k.lower() not in pix_exc:
                     smeta[k.lower()] = v
+
             for c, channel_meta in enumerate(
                     pix_meta.findall('ome:Channel', ome_ns)):
-                for kc, vc in channel_meta.attrib.iteritems():
+                for kc, vc in channel_meta.attrib.items():
                     if kc.lower() in channel_exc:
                         continue
                     if kc.lower() not in smeta:
@@ -237,8 +238,7 @@ def save_image(img, output_path, overwrite=False):
         if not overwrite:
             raise Exception("Ouput file %s already exists and parameter"
                             "overwrite=False" % output_path)
-        else:
-            os.remove(output_path)
+        os.remove(output_path)
 
     bioformats.write_image(output_path, img, bioformats.PT_UINT8)
 
