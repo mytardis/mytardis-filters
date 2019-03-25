@@ -45,9 +45,8 @@ def run_filter(filter, id, filename, uri):
             metadata = callable(id, filename, uri)
             if metadata is None:
                 # Something gone wrong
-                logger.error(
-                    "Can't get metadata for filter={}, id={}, filename={}".format(
-                        filter[0], id, filename))
+                s = "Can't get metadata for filter={}, id={}, filename={}"
+                logger.error(s.format(filter[0], id, filename))
             else:
                 # Send metadata back to mothership
                 app.send_task(
