@@ -37,37 +37,33 @@ def run_filter(filter, id, filename, uri):
     # Import filter
     callable = safe_import(filter)
 
-    # No data
-    metadata = None
-
     # Lock filter call
     lock_id = "filter-{}-{}".format(filter[1][0].lower(), id)
     if acquire_lock(lock_id, 300):  # 5 mins lock
         try:
             # Run filter
             metadata = callable(id, filename, uri)
+            if metadata is None:
+                # Something gone wrong
+                logger.error(
+                    "Can't get metadata for filter={}, id={}, filename={}".format(
+                        filter[0], id, filename))
+            else:
+                # Send metadata back to mothership
+                app.send_task(
+                    'tardis_portal.save_metadata',
+                    args=[
+                        id,
+                        filter[1][0],  # name
+                        filter[1][1],  # schema
+                        metadata
+                    ],
+                    queue=settings.API_QUEUE,
+                    priority=settings.API_TASK_PRIORITY
+                )
         except Exception as e:
             logger.error(str(e))
             logger.debug(traceback.format_exc())
         finally:
             # Unlock
             release_lock(lock_id)
-
-    if metadata is None:
-        # Something gone wrong
-        logger.error(
-            "Can't get metadata for filter={}, id={}, filename={}".format(
-                filter[0], id, filename))
-    else:
-        # Send metadata back to mothership
-        app.send_task(
-            'tardis_portal.save_metadata',
-            args=[
-                id,
-                filter[1][0],  # name
-                filter[1][1],  # schema
-                metadata
-            ],
-            queue=settings.API_QUEUE,
-            priority=settings.API_TASK_PRIORITY
-        )
