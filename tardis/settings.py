@@ -52,7 +52,7 @@ CELERY_QUEUES = (
 )
 
 DEFAULT_FILE_STORAGE = data['default_file_storage']
-STORE_DATA = data['store_data']
+STORE_DATA = data['default_store_path']
 METADATA_STORE_PATH = data['metadata_store_path']
 
 POST_SAVE_FILTERS = data['post_save_filters']

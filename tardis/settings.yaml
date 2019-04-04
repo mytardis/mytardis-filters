@@ -23,7 +23,7 @@ celery:
   default_task_priority: 5
   acks_late: True
 default_file_storage: tardis.storage.MyTardisLocalFileSystemStorage
-store_data: /var/store/
+default_store_path: /var/store/
 metadata_store_path: /var/store/metadata/
 post_save_filters:
   - !!python/tuple
