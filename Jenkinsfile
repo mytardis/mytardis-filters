@@ -30,19 +30,18 @@ podTemplate(
             ttyEnabled: true,
             command: 'cat',
             envVars: [
-                containerEnvVar(key: 'KUBECONFIG', value: '/tmp/kube/config')
+                containerEnvVar(key: 'KUBECONFIG', value: '/tmp/kube/admin.conf')
             ],
             resourceLimitCpu: '250m'
         )
     ],
     volumes: [
-        secretVolume(secretName: 'kube-config', mountPath: '/tmp/kube'),
+        secretVolume(secretName: 'kube-config-test', mountPath: '/tmp/kube'),
         secretVolume(secretName: 'docker-config', mountPath: '/tmp/docker'),
         hostPathVolume(hostPath: '/var/run/docker.sock', mountPath: '/var/run/docker.sock')
     ]
 ) {
     node(workerLabel) {
-        def ip = sh(returnStdout: true, script: 'hostname -i').trim()
         stage('Clone repository') {
             checkout scm
         }
