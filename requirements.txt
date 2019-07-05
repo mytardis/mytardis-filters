@@ -8,7 +8,7 @@ botocore==1.12.117
 celery==4.2.1
 cffi==1.12.2
 configparser==3.7.3
-Django==2.1.9
+Django==2.1.10
 docutils==0.14
 entrypoints==0.3
 enum34==1.1.6
