@@ -1,4 +1,5 @@
-def workerLabel = 'filters'
+def stackName = 'prod'
+def workerLabel = "filters-${stackName}"
 def dockerHubAccount = 'mytardis'
 def dockerImageName = 'k8s-filters'
 def dockerImageTag = ''
@@ -36,7 +37,7 @@ podTemplate(
         )
     ],
     volumes: [
-        secretVolume(secretName: 'kube-config-test', mountPath: '/tmp/kube'),
+        secretVolume(secretName: "kube-config-${stackName}", mountPath: '/tmp/kube')
         secretVolume(secretName: 'docker-config', mountPath: '/tmp/docker'),
         hostPathVolume(hostPath: '/var/run/docker.sock', mountPath: '/var/run/docker.sock')
     ]
