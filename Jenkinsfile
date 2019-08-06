@@ -37,7 +37,7 @@ podTemplate(
         )
     ],
     volumes: [
-        secretVolume(secretName: "kube-config-${stackName}", mountPath: '/tmp/kube')
+        secretVolume(secretName: "kube-config-${stackName}", mountPath: '/tmp/kube'),
         secretVolume(secretName: 'docker-config', mountPath: '/tmp/docker'),
         hostPathVolume(hostPath: '/var/run/docker.sock', mountPath: '/var/run/docker.sock')
     ]
