@@ -3,7 +3,7 @@ from .default_settings import *
 
 DEBUG = True
 
-SECRET_KEY = '2c8jtz$d3r4iby507u2d!pck3$8ovj$v2x6q7hi(jf9bo9&tf0'
+SECRET_KEY = os.environ['SECRET_KEY']
 
 DATABASES = {
     'default': {
