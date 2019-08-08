@@ -1,5 +1,8 @@
+# In a production deployment, this settings.yaml would be replaced by
+# a volume-mounted settings.yaml whose content can be generated from
+# a Kubernetes ConfigMap.
 debug: False
-secret_key: 't@ajg*8l(i+x8h4g8j!%n=h7g-w_5+17)e7jc72q8$*j3$s$1='
+secret_key: 'PLACEHOLDER'
 installed_apps:
   - django.contrib.contenttypes
   - tardis
