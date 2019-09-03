@@ -1,6 +1,7 @@
-FROM ubuntu:18.10 AS base
+FROM ubuntu:18.04 AS base
 
 ENV DEBIAN_FRONTEND noninteractive
+ENV LOG_LEVEL info
 
 RUN apt-get update -yqq && \
 	apt-get install -yqq --no-install-recommends \
@@ -60,7 +61,7 @@ RUN pip3 install -r requirements.txt
 
 ADD . /app
 
-CMD ["celery", "worker", "--app=tardis.celery.app", "--queues=filters", "--loglevel=info"]
+CMD ["celery", "worker", "--app=tardis.celery.app", "--queues=filters", "--loglevel=${LOG_LEVEL}"]
 
 FROM builder AS test
 
