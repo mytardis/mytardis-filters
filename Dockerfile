@@ -1,4 +1,4 @@
-FROM ubuntu:18.04 AS base
+FROM ubuntu:18.10 AS base
 
 ENV DEBIAN_FRONTEND noninteractive
 ENV LOG_LEVEL info
