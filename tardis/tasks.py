@@ -1,5 +1,6 @@
 import traceback
 import logging
+import os
 
 from django.conf import settings
 
@@ -22,17 +23,19 @@ def apply_filters(id, verified, filename, uri):
     else:
         # Create sub-task for each filter
         for filter in getattr(settings, 'POST_SAVE_FILTERS', []):
-            logger.info("Apply: filter={}, id={}, filename={}".format(
-                filter[0], id, filename))
-            # Run task asynchronously
-            run_filter.apply_async(args=[filter, id, filename, uri])
+            _, extension = os.path.splitext(filename)
+            if extension[1:] in filter[0][1]:
+                logger.info("Apply: filter={}, id={}, filename={}".format(
+                    filter[0][0], id, filename))
+                # Run task asynchronously
+                run_filter.apply_async(args=[filter, id, filename, uri])
 
 
 @app.task
 def run_filter(filter, id, filename, uri):
     # Accept task
     logger.info("Run: filter={}, id={}, filename={}".format(
-        filter[0], id, filename))
+        filter[0][0], id, filename))
 
     # Import filter
     callable = safe_import(filter)
@@ -46,7 +49,7 @@ def run_filter(filter, id, filename, uri):
             if metadata is None:
                 # Something gone wrong
                 s = "Can't get metadata for filter={}, id={}, filename={}"
-                logger.error(s.format(filter[0], id, filename))
+                logger.error(s.format(filter[0][0], id, filename))
             else:
                 # Send metadata back to mothership
                 app.send_task(

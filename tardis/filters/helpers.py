@@ -60,7 +60,7 @@ class fileFilter(object):
 
 
 def safe_import(filter):
-    filter_path = filter[0]
+    filter_path = filter[0][0]
     filter_args = filter[1] if len(filter) > 1 else []
     filter_kwargs = filter[2] if len(filter) > 2 else {}
     try:
