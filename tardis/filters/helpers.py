@@ -83,11 +83,15 @@ def safe_import(filter):
     return filter_class(*filter_args, **filter_kwargs)
 
 
-def get_thumbnail_paths(id, filename, uri, ext='png'):
+def get_thumbnail_paths(
+        df_id, filepath, uri, ext='png', replace_ext=False):
+    basename = os.path.basename(filepath)
+    if replace_ext:
+        basename = os.path.splitext(basename)[0]
     preview_image_rel_file_path = os.path.join(
         os.path.dirname(urlparse(uri).path),
-        str(id),
-        '%s.%s' % (os.path.basename(filename), ext))
+        str(df_id),
+        '%s.%s' % (basename, ext))
     return (preview_image_rel_file_path,
             os.path.join(settings.METADATA_STORE_PATH,
                          preview_image_rel_file_path))
