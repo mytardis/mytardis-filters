@@ -20,10 +20,8 @@ podTemplate(
             envVars: [
                 containerEnvVar(key: 'DOCKER_CONFIG', value: '/tmp/docker')
             ],
-            resourceRequestCpu: '1000m',
-            resourceLimitCpu: '1000m',
-            resourceRequestMemory: '1Gi',
-            resourceLimitMemory: '1Gi'
+            resourceRequestCpu: '500m',
+            resourceLimitCpu: '500m'
         ),
         containerTemplate(
             name: 'kubectl',
