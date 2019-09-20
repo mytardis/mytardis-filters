@@ -84,4 +84,4 @@ post_save_filters:
       - ['img']
     -
       - IMG
-      - http://tardis.edu.au/schemas/trdDatafile/1
+      - http://www.tardis.edu.au/schemas/trdDatafile/1
