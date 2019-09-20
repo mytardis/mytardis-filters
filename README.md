@@ -15,6 +15,7 @@ python manage.py loaddata tardis/filters/fcs/fcs.json
 python manage.py loaddata tardis/filters/pdf/pdf.json
 python manage.py loaddata tardis/filters/xlsx/xlsx.json
 python manage.py loaddata tardis/filters/csv/csv.json
+python manage.py loaddata tardis/filters/diffractionimage/diffractionimage.json
 ```
 
 To run tests within stack:

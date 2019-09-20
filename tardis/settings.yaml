@@ -78,3 +78,10 @@ post_save_filters:
       - CSV
       - http://tardis.edu.au/schemas/csv/1
       - /usr/bin/ssconvert
+  - !!python/tuple
+    -
+      - tardis.filters.diffractionimage.diffractionimage.make_filter
+      - ['img']
+    -
+      - IMG
+      - http://tardis.edu.au/schemas/trdDatafile/1
