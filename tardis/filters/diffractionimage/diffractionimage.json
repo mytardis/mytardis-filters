@@ -1,0 +1,246 @@
+[
+    {
+        "pk": null,
+        "model": "tardis_portal.schema",
+        "fields": {
+            "type": 3,
+            "namespace": "http://www.tardis.edu.au/schemas/trdDatafile/1",
+            "name": "TRD datafile",
+            "subtype": "mx"
+        }
+    },
+    {
+        "pk": null,
+        "model": "tardis_portal.parametername",
+        "fields": {
+            "name": "collectionDate",
+            "data_type": 1,
+            "is_searchable": false,
+            "choices": "",
+            "comparison_type": 1,
+            "full_name": "Collection Date",
+            "units": "",
+            "order": 9999,
+            "immutable": false,
+            "schema": [
+                "http://www.tardis.edu.au/schemas/trdDatafile/1"
+            ]
+        }
+    },
+    {
+        "pk": null,
+        "model": "tardis_portal.parametername",
+        "fields": {
+            "name": "detectorDistance",
+            "data_type": 1,
+            "is_searchable": false,
+            "choices": "",
+            "comparison_type": 1,
+            "full_name": "Detector Distance",
+            "units": "mm",
+            "order": 9999,
+            "immutable": false,
+            "schema": [
+                "http://www.tardis.edu.au/schemas/trdDatafile/1"
+            ]
+        }
+    },
+    {
+        "pk": null,
+        "model": "tardis_portal.parametername",
+        "fields": {
+            "name": "detectorSN",
+            "data_type": 2,
+            "is_searchable": false,
+            "choices": "",
+            "comparison_type": 1,
+            "full_name": "Detector S/N",
+            "units": "",
+            "order": 9999,
+            "immutable": false,
+            "schema": [
+                "http://www.tardis.edu.au/schemas/trdDatafile/1"
+            ]
+        }
+    },
+    {
+        "pk": null,
+        "model": "tardis_portal.parametername",
+        "fields": {
+            "name": "directBeamXPos",
+            "data_type": 1,
+            "is_searchable": false,
+            "choices": "",
+            "comparison_type": 1,
+            "full_name": "Direct Beam X-Pos",
+            "units": "mm",
+            "order": 9999,
+            "immutable": false,
+            "schema": [
+                "http://www.tardis.edu.au/schemas/trdDatafile/1"
+            ]
+        }
+    },
+    {
+        "pk": null,
+        "model": "tardis_portal.parametername",
+        "fields": {
+            "name": "directBeamYPos",
+            "data_type": 1,
+            "is_searchable": false,
+            "choices": "",
+            "comparison_type": 1,
+            "full_name": "Direct Beam Y-Pos",
+            "units": "mm",
+            "order": 9999,
+            "immutable": false,
+            "schema": [
+                "http://www.tardis.edu.au/schemas/trdDatafile/1"
+            ]
+        }
+    },
+    {
+        "pk": null,
+        "model": "tardis_portal.parametername",
+        "fields": {
+            "name": "exposureTime",
+            "data_type": 1,
+            "is_searchable": false,
+            "choices": "",
+            "comparison_type": 1,
+            "full_name": "Exposure Time",
+            "units": "s",
+            "order": 9999,
+            "immutable": false,
+            "schema": [
+                "http://www.tardis.edu.au/schemas/trdDatafile/1"
+            ]
+        }
+    },
+    {
+        "pk": null,
+        "model": "tardis_portal.parametername",
+        "fields": {
+            "name": "imageSizeX",
+            "data_type": 1,
+            "is_searchable": false,
+            "choices": "",
+            "comparison_type": 1,
+            "full_name": "Image Size X",
+            "units": "px",
+            "order": 9999,
+            "immutable": false,
+            "schema": [
+                "http://www.tardis.edu.au/schemas/trdDatafile/1"
+            ]
+        }
+    },
+    {
+        "pk": null,
+        "model": "tardis_portal.parametername",
+        "fields": {
+            "name": "imageSizeY",
+            "data_type": 1,
+            "is_searchable": false,
+            "choices": "",
+            "comparison_type": 1,
+            "full_name": "Image Size Y",
+            "units": "px",
+            "order": 9999,
+            "immutable": false,
+            "schema": [
+                "http://www.tardis.edu.au/schemas/trdDatafile/1"
+            ]
+        }
+    },
+    {
+        "pk": null,
+        "model": "tardis_portal.parametername",
+        "fields": {
+            "name": "imageType",
+            "data_type": 2,
+            "is_searchable": false,
+            "choices": "",
+            "comparison_type": 1,
+            "full_name": "Image Type",
+            "units": "",
+            "order": 9999,
+            "immutable": false,
+            "schema": [
+                "http://www.tardis.edu.au/schemas/trdDatafile/1"
+            ]
+        }
+    },
+    {
+        "pk": null,
+        "model": "tardis_portal.parametername",
+        "fields": {
+            "name": "oscillationRangeEnd",
+            "data_type": 1,
+            "is_searchable": false,
+            "choices": "",
+            "comparison_type": 1,
+            "full_name": "Oscillation Range End",
+            "units": "\u00b0",
+            "order": 9999,
+            "immutable": false,
+            "schema": [
+                "http://www.tardis.edu.au/schemas/trdDatafile/1"
+            ]
+        }
+    },
+    {
+        "pk": null,
+        "model": "tardis_portal.parametername",
+        "fields": {
+            "name": "oscillationRangeStart",
+            "data_type": 1,
+            "is_searchable": false,
+            "choices": "",
+            "comparison_type": 1,
+            "full_name": "Oscillation Range Start",
+            "units": "\u00b0",
+            "order": 9999,
+            "immutable": false,
+            "schema": [
+                "http://www.tardis.edu.au/schemas/trdDatafile/1"
+            ]
+        }
+    },
+    {
+        "pk": null,
+        "model": "tardis_portal.parametername",
+        "fields": {
+            "name": "twoTheta",
+            "data_type": 1,
+            "is_searchable": false,
+            "choices": "",
+            "comparison_type": 1,
+            "full_name": "Two Theta",
+            "units": "\u00b0",
+            "order": 9999,
+            "immutable": false,
+            "schema": [
+                "http://www.tardis.edu.au/schemas/trdDatafile/1"
+            ]
+        }
+    },
+    {
+        "pk": null,
+        "model": "tardis_portal.parametername",
+        "fields": {
+            "name": "xrayWavelength",
+            "data_type": 1,
+            "is_searchable": true,
+            "choices": "",
+            "comparison_type": 3,
+            "full_name": "X-Ray Wavelength",
+            "units": "\u00c5",
+            "order": 9999,
+            "immutable": false,
+            "schema": [
+                "http://www.tardis.edu.au/schemas/trdDatafile/1"
+            ]
+        }
+    }
+]
