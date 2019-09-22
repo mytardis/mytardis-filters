@@ -1,4 +1,4 @@
-def stackName = 'qat'
+def stackName = 'test'
 def workerLabel = "filters-${stackName}"
 def dockerHubAccount = 'mytardis'
 def dockerImageName = 'k8s-filters'
