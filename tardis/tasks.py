@@ -53,7 +53,7 @@ def run_filter(filter, id, filename, uri):
             else:
                 # Send metadata back to mothership
                 app.send_task(
-                    'tardis_portal.save_metadata',
+                    'tardis_portal.datafile.save_metadata',
                     args=[
                         id,
                         filter[1][0],  # name
