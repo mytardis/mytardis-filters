@@ -14,7 +14,7 @@
         "model": "tardis_portal.parametername",
         "fields": {
             "name": "collectionDate",
-            "data_type": 1,
+            "data_type": 2,
             "is_searchable": false,
             "choices": "",
             "comparison_type": 1,
