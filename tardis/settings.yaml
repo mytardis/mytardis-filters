@@ -81,7 +81,7 @@ post_save_filters:
   - !!python/tuple
     -
       - tardis.filters.diffractionimage.diffractionimage.make_filter
-      - ['img']
+      - ['img', 'osc']
     -
       - IMG
       - http://www.tardis.edu.au/schemas/trdDatafile/1

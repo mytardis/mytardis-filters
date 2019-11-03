@@ -115,7 +115,8 @@ class DiffractionImageFilter(fileFilter):
         return Extracted metadata
         rtype dict
         """
-        if not filepath.lower().endswith('.img'):
+        if not filepath.lower().endswith('.img') and \
+                not filepath.lower().endswith('.osc'):
             return None
 
         logger.info(
