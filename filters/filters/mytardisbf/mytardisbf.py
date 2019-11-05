@@ -3,14 +3,13 @@ import traceback
 import logging
 
 from xml.etree import ElementTree as et
-import numpy as np
-from scipy.ndimage import zoom
 
 import javabridge
 import bioformats
-from bioformats import log4j
+import numpy as np
 
-from django.conf import settings
+from bioformats import log4j
+from scipy import ndimage
 
 from ..helpers import fileFilter, get_thumbnail_paths
 
@@ -29,7 +28,7 @@ def check_and_start_jvm():
     if not mtbf_jvm_started:
         logger.debug('Starting a new JVM')
         try:
-            mh_size = getattr(settings, 'MTBF_MAX_HEAP_SIZE', '4G')
+            mh_size = os.getenv('MTBF_MAX_HEAP_SIZE', '4G')
             javabridge.start_vm(class_path=bioformats.JARS,
                                 max_heap_size=mh_size,
                                 run_headless=True)
@@ -208,14 +207,14 @@ def get_preview_image(fname, meta_xml=None, maxwh=256, series=0):
         # RGB Image
         img = bioformats.load_image(fname, t=0, z=z, series=series,
                                     rescale=False)
-        return zoom(img, (f, f, 1))
+        return ndimage.zoom(img, (f, f, 1))
 
     # Grayscale, grab channel 0 only
     img = bioformats.load_image(fname, c=0, t=0, z=z, series=series,
                                 rescale=False)
     # if img.dtype in (np.uint16, np.uint32, np.int16, np.int32):
     img = stretch_contrast(img)
-    return zoom(img, f)
+    return ndimage.zoom(img, f)
 
 
 def save_image(img, output_path, overwrite=False):

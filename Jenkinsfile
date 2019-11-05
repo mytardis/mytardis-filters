@@ -1,7 +1,8 @@
 def stackName = 'test'
-def workerLabel = "filters-${stackName}"
+def serviceName = 'filters'
+def workerLabel = "${serviceName}-${stackName}"
 def dockerHubAccount = 'mytardis'
-def dockerImageName = 'k8s-filters'
+def dockerImageName = "k8s-${serviceName}"
 def dockerImageTag = ''
 def dockerImageFullNameTag = ''
 def dockerImageFullNameLatest = "${dockerHubAccount}/${dockerImageName}:latest"
@@ -10,28 +11,34 @@ def k8sDeploymentNamespace = 'mytardis'
 podTemplate(
     label: workerLabel,
     serviceAccount: 'jenkins',
-    automountServiceAccountToken: true,
     containers: [
         containerTemplate(
             name: 'docker',
-            image: 'docker:18.06.1-ce-dind',
+            image: 'docker:19.03.2-dind',
             ttyEnabled: true,
             command: 'cat',
             envVars: [
                 containerEnvVar(key: 'DOCKER_CONFIG', value: '/tmp/docker')
             ],
-            resourceRequestCpu: '500m',
-            resourceLimitCpu: '500m'
+            resourceRequestCpu: '500m'
+        ),
+        containerTemplate(
+            name: 'rabbitmq',
+            image: 'rabbitmq:3.7',
+            alwaysPullImage: false,
+            envVars: [
+                envVar(key: 'RABBITMQ_DEFAULT_USER', value: 'user'),
+                envVar(key: 'RABBITMQ_DEFAULT_PASS', value: 'password')
+            ]
         ),
         containerTemplate(
             name: 'kubectl',
-            image: 'lachlanevenson/k8s-kubectl:v1.13.0',
+            image: 'lachlanevenson/k8s-kubectl:v1.15.4',
             ttyEnabled: true,
             command: 'cat',
             envVars: [
                 containerEnvVar(key: 'KUBECONFIG', value: '/tmp/kube/admin.conf')
-            ],
-            resourceLimitCpu: '250m'
+            ]
         )
     ],
     volumes: [
@@ -41,6 +48,7 @@ podTemplate(
     ]
 ) {
     node(workerLabel) {
+        def ip = sh(returnStdout: true, script: 'hostname -i').trim()
         stage('Clone repository') {
             checkout scm
         }
@@ -51,11 +59,20 @@ podTemplate(
                 sh("docker build . --tag ${dockerImageFullNameTag} --target=test")
             }
         }
+        def dockerName = "${dockerImageName}-${dockerImageTag}"
+        stage('Run test image as a service') {
+            container('docker') {
+                try {
+                    sh("docker rm -f ${dockerName}")
+                } catch(e) {}
+                sh("docker run -d --rm --add-host rabbitmq:${ip} --name ${dockerName} ${dockerImageFullNameTag}")
+            }
+        }
         def tests = [:]
         [
-            'pylint': "docker run ${dockerImageFullNameTag} pylint --rcfile .pylintrc tardis",
-            'flake8': "docker run ${dockerImageFullNameTag} flake8 --config=.flake8 tardis",
-            'tests': "docker run ${dockerImageFullNameTag} python3 manage.py test"
+            'pylint': "docker exec ${dockerName} pylint --rcfile .pylintrc ${serviceName}",
+            'flake8': "docker exec ${dockerName} flake8 --config=.flake8 ${serviceName}",
+            'pytest': "docker exec ${dockerName} pytest ${serviceName}"
         ].each { name, command ->
             tests[name] = {
                 stage("Run test - ${name}") {
@@ -66,9 +83,14 @@ podTemplate(
             }
         }
         parallel tests
+        stage('Stop test image') {
+            container('docker') {
+                sh("docker stop ${dockerName}")
+            }
+        }
         stage('Build image for production') {
             container('docker') {
-                sh("docker build . --tag ${dockerImageFullNameTag} --target=builder")
+                sh("docker build . --tag ${dockerImageFullNameTag} --target=base")
             }
         }
         stage('Push image to DockerHub') {
@@ -80,9 +102,7 @@ podTemplate(
         }
         stage('Deploy image to Kubernetes') {
             container('kubectl') {
-                ['filters'].each { item ->
-                    sh ("kubectl -n ${k8sDeploymentNamespace} set image deployment/${item} ${item}=${dockerImageFullNameTag}")
-                }
+                sh ("kubectl -n ${k8sDeploymentNamespace} set image deployment/${serviceName} ${serviceName}=${dockerImageFullNameTag}")
             }
         }
     }

@@ -1,62 +1,20 @@
-version: '3.3'
+version: "3.3"
 
 volumes:
-  store_data:
-  db_data:
-  rabbitmq_data:
+  db_data: null
+  rabbitmq_data: null
 
 services:
-  app:
-    image: mytardis/k8s-mytardis-prod:80017ed
-    ports:
-      - 8000:8000
-    volumes:
-      - store_data:/var/store
-      - ./docker/app.settings.py:/app/tardis/settings.py
-    env_file:
-      - ./docker/app.env
-    depends_on:
-      - db
-      - rabbitmq
-  celery:
-    image: mytardis/k8s-mytardis-prod:80017ed
-    command: celery worker --app=tardis.celery.tardis_app --queues=celery --loglevel=debug
-    environment:
-      - DJANGO_SETTINGS_MODULE=tardis.settings
-    volumes:
-      - store_data:/var/store
-      - ./docker/app.settings.py:/app/tardis/settings.py
-    env_file:
-      - ./docker/app.env
-    depends_on:
-      - db
-      - rabbitmq
-  filters:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    command: celery worker --app=tardis.celery.app --queues=filters --loglevel=debug
-    environment:
-      - DJANGO_SETTINGS_MODULE=tardis.settings
-    volumes:
-      - ./:/app
-      - store_data:/var/store
-    env_file:
-      - ./docker/app.env
-    depends_on:
-      - db
-      - rabbitmq
-      - memcached
-  db:
-    image: postgres:9.6
-    ports:
-      - 5432:5432
-    volumes:
-      - db_data:/var/lib/postgresql/data
-    env_file:
-      - ./docker/db.env
+  # db:
+  #   image: postgres:9.6
+  #   ports:
+  #     - 5432:5432
+  #   volumes:
+  #     - db_data:/var/lib/postgresql/data
+  #   env_file:
+  #     - ./docker/db.env
   rabbitmq:
-    image: rabbitmq:3-management
+    image: rabbitmq:3.7-management
     ports:
       - 15672:15672
     volumes:
@@ -67,3 +25,45 @@ services:
     image: memcached:1.5.12
     ports:
       - 11211:11211
+  # app:
+  #   depends_on:
+  #     - db
+  #     - rabbitmq
+  #   image: mytardis/mytardis:develop
+  #   build:
+  #     context: app
+  #   command: gunicorn wsgi:application --reload --bind=:8000 --workers=1 --worker-class=gevent --timeout=600 --log-level=debug
+  #   ports:
+  #     - 8000:8000
+  #   volumes:
+  #     - ./app/submodules/mytardis:/app
+  #     - ./app/submodules/mytardis-app-mydata:/app/tardis/apps/mydata
+  #     - ./docker/app.settings.py:/app/tardis/settings.py
+  #     - ./filters/tests/assets:/var/store
+  #   env_file:
+  #     - ./docker/app.env
+  # celery:
+  #   depends_on:
+  #     - db
+  #     - rabbitmq
+  #   image: mytardis/mytardis:develop
+  #   build:
+  #     context: app
+  #   command: celery worker --app=tardis.celery.tardis_app --queues=celery --loglevel=debug --without-mingle --without-gossip
+  #   volumes:
+  #     - ./app/submodules/mytardis:/app
+  #     - ./docker/app.settings.py:/app/tardis/settings.py
+  #   env_file:
+  #     - ./docker/app.env
+  filters:
+    depends_on:
+      - rabbitmq
+      - memcached
+    build:
+      context: .
+    environment:
+      - MTBF_MAX_HEAP_SIZE=1G
+      - LOG_LEVEL=debug
+    volumes:
+      - ./:/app
+      - ./filters/tests/assets:/var/store

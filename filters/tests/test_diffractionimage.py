@@ -1,12 +1,11 @@
-from os import path
+import os
+import unittest
 
-from django.test import TransactionTestCase
-
-import tardis.tests.helpers as helpers
-from tardis.filters.helpers import safe_import
+import filters.tests.helpers as helpers
+from filters.filters.helpers import safe_import
 
 
-class DiffractionImageFilterTestCase(TransactionTestCase):
+class DiffractionImageFilterTestCase(unittest.TestCase):
 
     def setUp(self):
         self.filter = helpers.get_filter_settings('IMG')
@@ -18,12 +17,13 @@ class DiffractionImageFilterTestCase(TransactionTestCase):
         id = helpers.get_datafile_id()
         dsn = helpers.get_dataset_name()
         filename = helpers.create_datafile(fname, dsn)
-        uri = path.join(dsn, fname)
+        uri = os.path.join(dsn, fname)
 
         # Generate thumbnail
         results = self.callable(id, filename, uri)
 
         # Basic schema checks
+        self.assertTrue(results is not None)
         self.assertTrue(isinstance(results, dict))
         self.assertTrue(
             'previewImage' in results and len(results['previewImage']))
@@ -31,7 +31,7 @@ class DiffractionImageFilterTestCase(TransactionTestCase):
         # Check that thumbnail file exists
         thumbnail_path = helpers.get_thumbnail_file(results['previewImage'])
         self.assertTrue(
-            path.exists(thumbnail_path),
+            os.path.exists(thumbnail_path),
             "Path %s doesn't exist" % thumbnail_path)
 
         # Check for metadata

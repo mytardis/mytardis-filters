@@ -1,4 +1,5 @@
 import os
+from kombu import Exchange, Queue
 from .default_settings import *
 
 DEBUG = True
@@ -50,7 +51,12 @@ LOGGING = {
 }
 
 CELERY_QUEUES += (
-    Queue('filters', Exchange('filters'),
-          routing_key='filters',
-          queue_arguments={'x-max-priority': MAX_TASK_PRIORITY}),
+    Queue(
+        'filters',
+        Exchange('filters'),
+        routing_key='filters',
+        queue_arguments={
+            'x-max-priority': MAX_TASK_PRIORITY
+        }
+    ),
 )

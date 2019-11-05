@@ -1,12 +1,11 @@
-from os import path
+import os
+import unittest
 
-from django.test import TransactionTestCase
-
-import tardis.tests.helpers as helpers
-from tardis.filters.helpers import safe_import
+import filters.tests.helpers as helpers
+from filters.filters.helpers import safe_import
 
 
-class BioformatsFilterTestCase(TransactionTestCase):
+class BioformatsFilterTestCase(unittest.TestCase):
 
     def setUp(self):
         self.filter = helpers.get_filter_settings('Bioformats')
@@ -18,20 +17,20 @@ class BioformatsFilterTestCase(TransactionTestCase):
         id = helpers.get_datafile_id()
         dsn = helpers.get_dataset_name()
         filename = helpers.create_datafile(fname, dsn)
-        uri = path.join(dsn, fname)
+        uri = os.path.join(dsn, fname)
 
         # Generate thumbnail and extract metadata
         results = self.callable(id, filename, uri)
-        print(results)
 
         # Basic schema checks
+        self.assertTrue(results is not None)
         self.assertTrue(isinstance(results, dict))
         self.assertTrue(
             'previewImage' in results and len(results['previewImage']))
 
         # Check that thumbnail file exists
         self.assertTrue(
-            path.exists(helpers.get_thumbnail_file(results['previewImage'])))
+            os.path.exists(helpers.get_thumbnail_file(results['previewImage'])))
 
         # Extracted metadata check
         self.assertTrue(
@@ -51,7 +50,7 @@ class BioformatsFilterTestCase(TransactionTestCase):
         id = helpers.get_datafile_id()
         dsn = helpers.get_dataset_name()
         filename = helpers.create_datafile(fname, dsn)
-        uri = path.join(dsn, fname)
+        uri = os.path.join(dsn, fname)
 
         # Generate thumbnails and extract metadata
         results = self.callable(id, filename, uri)
@@ -64,7 +63,7 @@ class BioformatsFilterTestCase(TransactionTestCase):
 
         # Check that thumbnail file exists
         self.assertTrue(
-            path.exists(helpers.get_thumbnail_file(results['previewImage'])))
+            os.path.exists(helpers.get_thumbnail_file(results['previewImage'])))
 
         # Extracted metadata check
         self.assertTrue(

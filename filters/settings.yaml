@@ -1,0 +1,62 @@
+rabbitmq:
+  host: rabbitmq
+  port: 5672
+  user: user
+  password: password
+  vhost: /
+memcached:
+  host: memcached
+  port: 11211
+queues:
+  filters:
+    name: filters
+    max_task_priority: 10
+    task_priority: 5
+  api:
+    name: celery
+    max_task_priority: 10
+    task_priority: 5
+default_store_path: /var/store/
+metadata_store_path: /var/store/metadata/
+post_save_filters:
+  - name: Bioformats
+    schema: http://tardis.edu.au/schemas/bioformats/2
+    path: filters.filters.mytardisbf.mytardisbf.make_filter
+    files: ['al3d', 'am', 'amiramesh', 'apl', 'arf', 'avi', 'bmp',
+            'c01', 'cfg', 'cxd', 'dat', 'dcm', 'dicom', 'dm3', 'dv',
+            'eps', 'epsi', 'fits', 'flex', 'fli', 'gel', 'gif', 'grey',
+            'hdr', 'html', 'hx', 'ics', 'ids', 'img', 'ims', 'ipl',
+            'ipm', 'ipw', 'jp2', 'jpeg', 'jpg', 'l2d', 'labels', 'lei',
+            'lif', 'liff', 'lim', 'lsm', 'mdb', 'mnc', 'mng', 'mov',
+            'mrc', 'mrw', 'mtb', 'naf', 'nd', 'nd2', 'nef', 'nhdr',
+            'nrrd', 'obsep', 'oib', 'oif', 'ome', 'ome.tiff', 'pcx',
+            'pgm', 'pic', 'pict', 'png', 'ps', 'psd', 'r3d', 'raw',
+            'scn', 'sdt', 'seq', 'sld', 'stk', 'svs', 'tif', 'tiff',
+            'tnb', 'txt', 'vws', 'xdce', 'xml', 'xv', 'xys', 'zvi']
+  - name: FCS
+    schema: http://tardis.edu.au/schemas/fcs/1
+    path: filters.filters.fcs.fcs.make_filter
+    args:
+      - filters/filters/fcs/bin/fcsplot
+      - filters/filters/fcs/bin/showinf
+    files: ['fcs']
+  - name: PDF
+    schema: http://tardis.edu.au/schemas/pdf/1
+    path: filters.filters.pdf.pdf.make_filter
+    files: ['pdf']
+  - name: XLSX
+    schema: http://tardis.edu.au/schemas/xlsx/1
+    path: filters.filters.xlsx.xlsx.make_filter
+    args:
+      - /usr/bin/ssconvert
+    files: ['xlsx']
+  - name: CSV
+    schema: http://tardis.edu.au/schemas/csv/1
+    path: filters.filters.csv.csv.make_filter
+    args:
+      - /usr/bin/ssconvert
+    files: ['csv']
+  - name: IMG
+    schema: http://www.tardis.edu.au/schemas/trdDatafile/1
+    path: filters.filters.diffractionimage.diffractionimage.make_filter
+    files: ['img', 'osc']

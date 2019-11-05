@@ -4,12 +4,9 @@ from importlib import import_module
 import subprocess
 import logging
 
-from django.conf import settings
-from django.core.exceptions import ImproperlyConfigured
-from django.core.cache import caches
+from filters.settings import config
 
 logger = logging.getLogger(__name__)
-cache = caches['default']
 
 
 class fileFilter(object):
@@ -60,27 +57,31 @@ class fileFilter(object):
 
 
 def safe_import(filter):
-    filter_path = filter[0][0]
-    filter_args = filter[1] if len(filter) > 1 else []
-    filter_kwargs = filter[2] if len(filter) > 2 else {}
     try:
-        dot = filter_path.rindex('.')
-    except ValueError:
-        raise ImproperlyConfigured(
-            "{} isn't a filter module".format(filter_path))
-    module_name, class_name = filter_path[:dot], filter_path[dot + 1:]
+        dot = filter['path'].rindex('.')
+    except Exception as e:
+        logger.error('%s isn\'t a filter module', filter['path'])
+        logger.error(str(e))
+        raise
+    module_name, class_name = filter['path'][:dot], filter['path'][dot + 1:]
     try:
         module = import_module(module_name)
-    except ImportError as e:
-        raise ImproperlyConfigured(
-            "Error importing filter {}: {}".format(module_name, e))
+    except Exception as e:
+        logger.error('Error importing filter %s: %s', module_name, str(e))
+        logger.error(str(e))
+        raise
     try:
         filter_class = getattr(module, class_name)
-    except AttributeError:
-        raise ImproperlyConfigured(
-            "Filter module {} does not define a {} class".format(module_name,
-                                                                 class_name))
-    return filter_class(*filter_args, **filter_kwargs)
+    except Exception as e:
+        logger.error('Filter module %s does not define a %s class',
+                     module_name, class_name)
+        logger.error(str(e))
+        raise
+    filter_args = [
+        filter['name'],
+        filter['schema']
+    ] + filter.get('args', [])
+    return filter_class(*filter_args)
 
 
 def get_thumbnail_paths(
@@ -93,7 +94,7 @@ def get_thumbnail_paths(
         str(df_id),
         '%s.%s' % (basename, ext))
     return (preview_image_rel_file_path,
-            os.path.join(settings.METADATA_STORE_PATH,
+            os.path.join(config['metadata_store_path'],
                          preview_image_rel_file_path))
 
 
@@ -126,14 +127,3 @@ def textoutput(cd, execfilename, inputfilename, args=''):
     logger.info(cmd)
 
     return exec_command(cmd)
-
-
-# cache.add fails if if the key already exists
-def acquire_lock(lock_id, expire=60):
-    return cache.add(lock_id, 'true', expire)
-
-
-# cache.delete() can be slow, but we have to use it
-# to take advantage of using add() for atomic locking
-def release_lock(lock_id):
-    cache.delete(lock_id)

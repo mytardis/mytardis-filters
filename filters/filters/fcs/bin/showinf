@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
 """
 Usage: showinf in_file.fcs
 Author: James Wettenhall <james.wettenhall@monash.edu>

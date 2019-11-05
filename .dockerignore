@@ -1,7 +1,7 @@
 # Docker
 .dockerignore
 Dockerfile*
-docker*yml
+docker*yaml
 docker/**
 
 # Git
@@ -27,6 +27,3 @@ db.sqlite3
 
 # docker-compose
 app
-db.env
-rabbitmq.env
-settings.env

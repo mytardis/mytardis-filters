@@ -3,16 +3,16 @@ import random
 import uuid
 from shutil import copyfile
 
-from django.conf import settings
+from filters.settings import config
 
 base_path = os.path.abspath(os.path.dirname(__file__))
 
 
 def get_filter_settings(filter_name):
-    for filter in getattr(settings, 'POST_SAVE_FILTERS', []):
-        if filter[1][0] == filter_name:
+    for filter in config['post_save_filters']:
+        if filter['name'] == filter_name:
             return filter
-    return None
+    raise ValueError("Can\'t find filter {} in settings".format(filter_name))
 
 
 def get_datafile_id():
@@ -24,7 +24,7 @@ def get_dataset_name():
 
 
 def get_thumbnail_file(filename):
-    return os.path.join(settings.METADATA_STORE_PATH, filename)
+    return os.path.join(config['metadata_store_path'], filename)
 
 
 def get_assets_file(filename):
@@ -32,7 +32,8 @@ def get_assets_file(filename):
 
 
 def create_datafile(filename, dataset_name):
-    df_abs_path = os.path.join(settings.STORE_DATA, dataset_name, filename)
+    df_abs_path = os.path.join(config['default_store_path'],
+                               dataset_name, filename)
     if not os.path.exists(os.path.dirname(df_abs_path)):
         os.makedirs(os.path.dirname(df_abs_path))
     copyfile(get_assets_file(filename), df_abs_path)
