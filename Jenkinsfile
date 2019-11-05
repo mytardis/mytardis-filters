@@ -32,6 +32,11 @@ podTemplate(
             ]
         ),
         containerTemplate(
+            name: 'memcached',
+            image: 'memcached:1.5.12',
+            alwaysPullImage: false
+        ),
+        containerTemplate(
             name: 'kubectl',
             image: 'lachlanevenson/k8s-kubectl:v1.15.4',
             ttyEnabled: true,
@@ -65,7 +70,7 @@ podTemplate(
                 try {
                     sh("docker rm -f ${dockerName}")
                 } catch(e) {}
-                sh("docker run -d --rm --add-host rabbitmq:${ip} --name ${dockerName} ${dockerImageFullNameTag}")
+                sh("docker run -d --rm --add-host rabbitmq:${ip} --add-host memcached:${ip} --name ${dockerName} ${dockerImageFullNameTag}")
             }
         }
         def tests = [:]
