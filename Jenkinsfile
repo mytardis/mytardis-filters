@@ -67,7 +67,10 @@ podTemplate(
         def dockerName = "${dockerImageName}-${dockerImageTag}"
         stage('Run test image as a service') {
             container('docker') {
-                sh("docker run -d --rm --add-host rabbitmq:${ip} --add-host memcached:${ip} --name ${dockerName} ${dockerImageFullNameTag}")
+                try {
+                    sh("docker rm -f ${dockerName}")
+                } catch(e) {}
+                sh("docker run --rm --add-host rabbitmq:${ip} --add-host memcached:${ip} --name ${dockerName} ${dockerImageFullNameTag}")
             }
         }
         def tests = [:]
@@ -88,7 +91,6 @@ podTemplate(
         stage('Stop test image') {
             container('docker') {
                 sh("docker stop ${dockerName}")
-                sh("docker rm -f ${dockerName}")
             }
         }
         stage('Build image for production') {
