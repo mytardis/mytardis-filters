@@ -70,7 +70,7 @@ podTemplate(
                 try {
                     sh("docker rm -f ${dockerName}")
                 } catch(e) {}
-                sh("docker run --rm --add-host rabbitmq:${ip} --add-host memcached:${ip} --name ${dockerName} ${dockerImageFullNameTag}")
+                sh("docker run -d --rm --add-host rabbitmq:${ip} --add-host memcached:${ip} --name ${dockerName} ${dockerImageFullNameTag}")
             }
         }
         def tests = [:]
