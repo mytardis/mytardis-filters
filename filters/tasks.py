@@ -52,18 +52,19 @@ def apply_filters(df_id, verified, filename, uri):
 
     # Do not process unverified files
     if not verified:
-        logger.debug(
-            'df_id=%s: not verified, skipping', df_id)
+        logger.debug('df_id=%s: not verified, skipping', df_id)
     else:
         # Check if file exists
         if os.path.exists(filename):
             # Create sub-task for each filter
-            for filter in getattr(config, 'post_save_filters', []):
+            for filter in config['post_save_filters']:
                 _, extension = os.path.splitext(filename)
                 if extension[1:] in filter['files']:
                     logger.info('df_id=%s: apply %s', df_id, filter['name'])
                     # Run task asynchronously
                     run_filter.apply_async(args=[filter, df_id, filename, uri])
+                else:
+                    logger.debug('df_id=%s: skip %s', df_id, filter['name'])
         else:
             logger.error('df=%s: file does not exist (%s)', df_id, filename)
 
