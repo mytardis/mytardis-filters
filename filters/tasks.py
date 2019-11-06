@@ -60,8 +60,8 @@ def apply_filters(df_id, verified, filename, uri):
             # Create sub-task for each filter
             for filter in getattr(config, 'post_save_filters', []):
                 _, extension = os.path.splitext(filename)
-                if extension[1:] in filter[0][1]:
-                    logger.info('df_id=%s: apply %s', df_id, filter[0][0])
+                if extension[1:] in filter['files']:
+                    logger.info('df_id=%s: apply %s', df_id, filter['name'])
                     # Run task asynchronously
                     run_filter.apply_async(args=[filter, df_id, filename, uri])
         else:
@@ -71,13 +71,13 @@ def apply_filters(df_id, verified, filename, uri):
 @app.task
 def run_filter(filter, df_id, filename, uri):
     # Accept task
-    logger.debug('df_id=%s: run %s', df_id, filter[0][0])
+    logger.debug('df_id=%s: run %s', df_id, filter['name'])
 
     # Import filter
     callable = safe_import(filter)
 
     # Lock filter call
-    lock_id = "filter-{}-{}".format(filter[1][0].lower(), df_id)
+    lock_id = "filter-{}-{}".format(filter['name'].lower(), df_id)
     if acquire_lock(lock_id, 300):  # 5 mins lock
         try:
             # Run filter
@@ -85,7 +85,7 @@ def run_filter(filter, df_id, filename, uri):
             if metadata is None:
                 # Something gone wrong
                 logger.error('df_id=%s: can\'t get metadata for %s',
-                             df_id, filter[0][0])
+                             df_id, filter['name'])
             else:
                 # Send metadata back to mothership
                 q = config['queues']['api']
@@ -93,8 +93,8 @@ def run_filter(filter, df_id, filename, uri):
                     'tardis_portal.datafile.save_metadata',
                     args=[
                         df_id,
-                        filter[1][0],  # name
-                        filter[1][1],  # schema
+                        filter['name'],
+                        filter['schema'],
                         metadata
                     ],
                     queue=q['name'],
