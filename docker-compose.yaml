@@ -7,7 +7,7 @@ volumes:
 
 services:
   app:
-    image: mytardis/k8s-mytardis-prod:80017ed
+    image: mytardis/k8s-mytardis-prod:latest
     ports:
       - 8000:8000
     volumes:
@@ -19,7 +19,7 @@ services:
       - db
       - rabbitmq
   celery:
-    image: mytardis/k8s-mytardis-prod:80017ed
+    image: mytardis/k8s-mytardis-prod:latest
     command: celery worker --app=tardis.celery.tardis_app --queues=celery --loglevel=debug
     environment:
       - DJANGO_SETTINGS_MODULE=tardis.settings
