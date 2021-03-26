@@ -137,6 +137,8 @@ class DiffractionImageFilter(fileFilter):
         except Exception as err:
             logger.exception(err)
 
+        return None
+
     def getDiffractionImageMetadata(self, filepath):
         """Return a dictionary of the metadata.
         """
