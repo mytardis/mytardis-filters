@@ -15,8 +15,7 @@ class CsvImageFilter(fileFilter):
 
     def __init__(self, name, schema, ssconvert,
                  tagsToFind=[], tagsToExclude=[]):
-        super(CsvImageFilter, self).__init__(name, schema, tagsToFind,
-                                             tagsToExclude)
+        super().__init__(name, schema, tagsToFind, tagsToExclude)
         self.ssconvert = ssconvert
 
     def __call__(self, id, filename, uri, **kwargs):

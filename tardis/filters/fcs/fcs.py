@@ -74,8 +74,7 @@ class FcsImageFilter(fileFilter):
 
     def __init__(self, name, schema, fcsplot_path, showinf_path,
                  tagsToFind=[], tagsToExclude=[]):
-        super(FcsImageFilter, self).__init__(name, schema, tagsToFind,
-                                             tagsToExclude)
+        super().__init__(name, schema, tagsToFind, tagsToExclude)
         self.fcsplot_path = fcsplot_path
         self.showinf_path = showinf_path
 

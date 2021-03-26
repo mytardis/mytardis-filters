@@ -62,8 +62,7 @@ class DiffractionImageFilter(fileFilter):
     rtype: dict
     """
     def __init__(self, name, schema, tagsToFind=[], tagsToExclude=[]):
-        super(DiffractionImageFilter, self).__init__(
-            name, schema, tagsToFind, tagsToExclude)
+        super().__init__(name, schema, tagsToFind, tagsToExclude)
         self.name = name
         self.schema = schema
         self.diffdump_path = os.path.join(
