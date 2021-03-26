@@ -66,17 +66,20 @@ def safe_import(filter):
     try:
         dot = filter_path.rindex('.')
     except ValueError:
+        # pylint: disable=W0707
         raise ImproperlyConfigured(
             "{} isn't a filter module".format(filter_path))
     module_name, class_name = filter_path[:dot], filter_path[dot + 1:]
     try:
         module = import_module(module_name)
     except ImportError as e:
+        # pylint: disable=W0707
         raise ImproperlyConfigured(
             "Error importing filter {}: {}".format(module_name, e))
     try:
         filter_class = getattr(module, class_name)
     except AttributeError:
+        # pylint: disable=W0707
         raise ImproperlyConfigured(
             "Filter module {} does not define a {} class".format(module_name,
                                                                  class_name))
