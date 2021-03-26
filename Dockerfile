@@ -1,6 +1,8 @@
 FROM mytardis/filters-essentials AS base
 
 ENV LOG_LEVEL info
+ENV LC_ALL=C.UTF-8
+ENV LANG=C.UTF-8
 
 FROM base AS builder
 
@@ -8,11 +10,12 @@ RUN mkdir /app
 WORKDIR /app
 
 COPY requirements.txt /app
+RUN pip3 install -U pip setuptools
 RUN pip3 install -r requirements.txt
 
 ADD . /app
 
-CMD ["celery", "worker", "--app=tardis.celery.app", "--queues=filters", "--loglevel=${LOG_LEVEL}"]
+CMD ["celery", "-A tardis.celery.app", "worker", "--queues=filters", "--loglevel=${LOG_LEVEL}"]
 
 FROM builder AS test
 

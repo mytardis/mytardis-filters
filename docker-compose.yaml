@@ -20,7 +20,7 @@ services:
       - rabbitmq
   celery:
     image: mytardis/k8s-mytardis-prod:latest
-    command: celery worker --app=tardis.celery.tardis_app --queues=celery --loglevel=debug
+    command: celery -A tardis.celery.tardis_app worker --queues=celery --loglevel=debug
     environment:
       - DJANGO_SETTINGS_MODULE=tardis.settings
     volumes:
@@ -35,7 +35,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: celery worker --app=tardis.celery.app --queues=filters --loglevel=debug
+    command: celery -A tardis.celery.app worker --queues=filters --loglevel=debug
     environment:
       - DJANGO_SETTINGS_MODULE=tardis.settings
     volumes:
