@@ -55,7 +55,7 @@ podTemplate(
         }
         def tests = [:]
         [
-            'pylint': "docker run ${dockerImageFullNameTag} pylint --rcfile .pylintrc tardis",
+            'pylint': "docker run ${dockerImageFullNameTag} pylint --rcfile .pylintrc --django-settings-module=tardis.settings tardis",
             'flake8': "docker run ${dockerImageFullNameTag} flake8 --config=.flake8 tardis",
             'tests': "docker run ${dockerImageFullNameTag} python3 manage.py test"
         ].each { name, command ->
