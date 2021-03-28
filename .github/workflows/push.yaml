@@ -1,0 +1,15 @@
+name: test
+on: push
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build the stack
+        run: docker-compose up -d
+      - name: Flake8
+        run: docker-compose exec filters flake8 --config=.flake8 tardis
+      - name: PyLint
+        run: docker-compose exec filters pylint --rcfile .pylintrc --django-settings-module=tardis.settings tardis
+      - name: Tests
+        run: docker-compose exec filters python3 manage.py test

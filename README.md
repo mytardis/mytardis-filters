@@ -20,7 +20,7 @@ python manage.py loaddata tardis/filters/diffractionimage/diffractionimage.json
 
 To run tests within stack:
 ```
-docker-compose exec filters flake8 tardis
-docker-compose exec filters pylint tardis
+docker-compose exec filters flake8 --config=.flake8 tardis
+docker-compose exec filters pylint --rcfile .pylintrc --django-settings-module=tardis.settings tardis
 docker-compose exec filters python3 manage.py test
 ```
