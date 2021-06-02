@@ -1,7 +1,7 @@
 Django==3.2.3
 celery==5.1.0
-numpy==1.19.5
-scipy==1.5.4
+numpy==1.20.3
+scipy==1.6.3
 boto3==1.17.85
 configparser==5.0.2
 javabridge==1.0.19
