@@ -8,7 +8,6 @@ from scipy.ndimage import zoom
 
 import javabridge
 import bioformats
-from bioformats import log4j
 
 from django.conf import settings
 
@@ -17,6 +16,34 @@ from ..helpers import fileFilter, get_thumbnail_paths
 logger = logging.getLogger(__name__)
 
 mtbf_jvm_started = False  # Global to check whether JVM started on a thread
+
+
+def shush_logger():
+    """
+    This is so that Javabridge doesn't spill out a lot of DEBUG messages
+    during runtime. From CellProfiler/python-bioformats.
+    """
+    root_logger_name = javabridge.get_static_field(
+        "org/slf4j/Logger",
+        "ROOT_LOGGER_NAME",
+        "Ljava/lang/String;")
+
+    root_logger = javabridge.static_call(
+        "org/slf4j/LoggerFactory",
+        "getLogger",
+        "(Ljava/lang/String;)Lorg/slf4j/Logger;",
+        root_logger_name)
+
+    log_level = javabridge.get_static_field(
+        "ch/qos/logback/classic/Level",
+        "WARN",
+       "Lch/qos/logback/classic/Level;")
+
+    javabridge.call(
+        root_logger,
+        "setLevel",
+        "(Lch/qos/logback/classic/Level;)V",
+        log_level)
 
 
 def check_and_start_jvm():
@@ -284,7 +311,7 @@ class BioformatsFilter(fileFilter):
 
         try:
             javabridge.attach()
-            log4j.basic_config()
+            shush_logger()
 
             thumb_rel_path, thumb_abs_path = get_thumbnail_paths(id, filename,
                                                                  uri)
