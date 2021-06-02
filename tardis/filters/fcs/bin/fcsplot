@@ -5,9 +5,8 @@ Author: James Wettenhall <james.wettenhall@monash.edu>
 """
 import sys
 import os
-import array
 from rpy2.robjects.packages import importr
-from rpy2.robjects import StrVector
+from rpy2.robjects.vectors import StrVector
 
 if len(sys.argv) < 3:
     print("Usage: fcsplot in_file.fcs out_file.png")
@@ -17,12 +16,19 @@ graphics = importr('graphics')
 grdevices = importr('grDevices')
 base = importr('base')
 flowCore = importr('flowCore')
+methods = importr('methods')
 
 flowSet = flowCore.read_flowSet(files=sys.argv[1], emptyValue=False,
                                 ignore_text_offset=True)
 frameName = base.ls(envir=flowSet.do_slot("frames"))
 flowFrame = base.get(frameName, envir=flowSet.do_slot("frames"))
-colNames = tuple(flowSet.do_slot("colnames"))
+
+colnamesMethod = \
+    methods.getMethod("colnames",
+              signature=StrVector(["flowSet"]),
+              where="package:flowCore")
+
+colNames = tuple(colnamesMethod(flowSet))
 
 flowViz = importr('flowViz')
 
