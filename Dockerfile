@@ -10,7 +10,7 @@ RUN mkdir /app
 WORKDIR /app
 
 COPY requirements.txt /app
-RUN pip3 install -U pip setuptools
+RUN pip3 install -U pip3 setuptools numpy
 RUN pip3 install -r requirements.txt
 
 ADD . /app
