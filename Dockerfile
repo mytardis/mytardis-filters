@@ -15,7 +15,7 @@ RUN pip3 install -r requirements.txt
 
 ADD . /app
 
-CMD ["celery", "-A tardis.celery.app", "worker", "--queues=filters", "--loglevel=${LOG_LEVEL}"]
+CMD ["celery", "--app=tardis.celery.app", "worker", "--queues=filters", "--loglevel=${LOG_LEVEL}"]
 
 FROM builder AS test
 

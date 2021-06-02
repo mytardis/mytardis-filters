@@ -102,13 +102,15 @@ def get_thumbnail_paths(
 
 def exec_command(cmd):
     """execute command on shell"""
-    p = subprocess.Popen(cmd, stdout=subprocess.PIPE,
-                         stderr=subprocess.STDOUT, shell=True)
-    stdout, _ = p.communicate()
-
-    if p.returncode != 0:
-        logger.error(stdout)
-        return None
+    with subprocess.Popen(
+            cmd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            shell=True) as p:
+        stdout, _ = p.communicate()
+        if p.returncode != 0:
+            logger.error(stdout)
+            return None
 
     return stdout
 

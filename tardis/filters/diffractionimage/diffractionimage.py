@@ -252,10 +252,13 @@ class DiffractionImageFilter(fileFilter):
 
         cmd = "cd '" + cd + "'; LD_LIBRARY_PATH=.:$LD_LIBRARY_PATH ./'" + \
             diffdump_exec + "' '" + file_path + "'"
-        proc = subprocess.Popen(
-            cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
-        output, _ = proc.communicate()
-        return output.decode()
+        with subprocess.Popen(
+            cmd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            shell=True) as proc:
+            output, _ = proc.communicate()
+            return output.decode()
 
     def run_diff2jpeg(self, filepath, thumb_abs_path):
         split_diff2jpeg_path = self.diff2jpeg_path.rsplit('/', 1)
@@ -269,13 +272,14 @@ class DiffractionImageFilter(fileFilter):
             cmd = "cd '" + cd + "'; LD_LIBRARY_PATH=.:$LD_LIBRARY_PATH ./'" + \
                 diff2jpeg_exec + "' '" + filepath + "' "
 
-            proc = subprocess.Popen(
-                cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                shell=True)
-
-            result_str, _ = proc.communicate()
-            if result_str.startswith(b'Exception'):
-                return result_str
+            with subprocess.Popen(
+                cmd,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                shell=True) as proc:
+                result_str, _ = proc.communicate()
+                if result_str.startswith(b'Exception'):
+                    return result_str
 
             diff2jpeg_result = "%s.jpg" % os.path.splitext(filepath)[0]
             target_dir = os.path.dirname(thumb_abs_path)
