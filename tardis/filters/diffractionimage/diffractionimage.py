@@ -256,7 +256,8 @@ class DiffractionImageFilter(fileFilter):
             cmd,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
-            shell=True) as proc:
+            shell=True
+        ) as proc:
             output, _ = proc.communicate()
             return output.decode()
 
@@ -276,7 +277,8 @@ class DiffractionImageFilter(fileFilter):
                 cmd,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
-                shell=True) as proc:
+                shell=True
+            ) as proc:
                 result_str, _ = proc.communicate()
                 if result_str.startswith(b'Exception'):
                     return result_str
