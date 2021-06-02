@@ -37,7 +37,7 @@ def shush_logger():
     log_level = javabridge.get_static_field(
         "ch/qos/logback/classic/Level",
         "WARN",
-       "Lch/qos/logback/classic/Level;")
+        "Lch/qos/logback/classic/Level;")
 
     javabridge.call(
         root_logger,
