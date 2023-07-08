@@ -1,6 +1,6 @@
 Django==4.2.3
 celery==5.3.1
-numpy==1.20.3
+numpy==1.25.0
 scipy==1.6.3
 boto3==1.17.90
 configparser==5.0.2
