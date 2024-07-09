@@ -1,4 +1,4 @@
-flake8==3.9.2
+flake8==7.1.0
 pytest==6.2.4
 pylint==2.8.3
 pylint-django==2.4.4
