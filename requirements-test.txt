@@ -1,4 +1,4 @@
 flake8==7.1.0
 pytest==8.3.1
 pylint==3.2.5
-pylint-django==2.4.4
+pylint-django==2.5.5
