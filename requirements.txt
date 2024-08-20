@@ -11,4 +11,4 @@ python-magic==0.4.27
 python-memcached==1.62
 pytz==2024.1
 PyYAML==6.0.2
-rpy2==3.4.4
+rpy2==3.5.16
