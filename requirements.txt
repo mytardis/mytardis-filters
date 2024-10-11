@@ -4,7 +4,7 @@ numpy==2.1.2
 scipy==1.14.1
 boto3==1.35.38
 configparser==7.1.0
-python-javabridge==4.0.3  # this package requires numpy to be installed
+python-javabridge==4.0.4  # this package requires numpy to be installed
 python-bioformats==4.0.4
 python-dateutil==2.8.1
 python-magic==0.4.24
