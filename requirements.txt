@@ -10,5 +10,5 @@ python-dateutil==2.9.0.post0
 python-magic==0.4.27
 python-memcached==1.62
 pytz==2024.2
-PyYAML==5.4.1
+PyYAML==6.0.2
 rpy2==3.4.4
