@@ -2,7 +2,7 @@ Django==5.2
 celery==5.5.2
 numpy==2.2.5
 scipy==1.15.2
-boto3==1.17.90
+boto3==1.38.3
 configparser==5.0.2
 python-javabridge==4.0.3  # this package requires numpy to be installed
 python-bioformats==4.0.4
